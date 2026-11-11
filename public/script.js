@@ -104,22 +104,16 @@
         img.alt = "";
         media.append(img);
       }
-      if (item.tag) {
-        const tag = document.createElement("span");
-        tag.className = "card__tag";
-        tag.textContent = item.tag;
-        media.append(tag);
-      }
-
       const title = document.createElement("span");
       title.className = "card__title";
       title.textContent = item.title;
 
       btn.append(media, title);
-      if (item.summary) {
+      const meta = [item.tag, item.summary].filter(Boolean).join(" · ");
+      if (meta) {
         const summary = document.createElement("span");
         summary.className = "card__summary";
-        summary.textContent = item.summary;
+        summary.textContent = meta;
         btn.append(summary);
       }
       li.append(btn);

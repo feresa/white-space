@@ -114,6 +114,14 @@ function addFail(ip) {
 const SRC_RE = /^\/(assets|uploads)\/[A-Za-z0-9._-]+$/;
 const POS_RE = /^\d{1,3}(\.\d+)?% \d{1,3}(\.\d+)?%$/;
 
+const DEFAULT_BANNER = "#f2dc6b";
+const colorOf = v => (/^#[0-9a-fA-F]{6}$/.test(v || "") ? v.toLowerCase() : DEFAULT_BANNER);
+const isDark = hex => {
+  const [r, g, b] = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255)
+    .map(c => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)));
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.35;
+};
+
 const str = (v, max) => (typeof v === "string" ? v : "").slice(0, max).trim();
 
 function cleanImage(img) {
@@ -161,6 +169,7 @@ function cleanContent(input) {
       tagline: str(s.tagline, 120),
       description: str(s.description, 300),
       footer: str(s.footer, 200),
+      bannerColor: colorOf(s.bannerColor),
       categories
     },
     about,
@@ -225,6 +234,8 @@ app.get(["/", "/index.html"], (req, res) => {
     .replace(/{{DESCRIPTION}}/g, escapeHTML(c.site.description || c.site.tagline))
     .replace(/{{TAGLINE}}/g, escapeHTML(c.site.tagline))
     .replace(/{{OG_IMAGE}}/g, escapeHTML(ogImg))
+    .replace(/{{BANNER_COLOR}}/g, c.site.bannerColor)
+    .replace(/{{BANNER_CLASS}}/g, isDark(c.site.bannerColor) ? "banner--dark" : "")
     .replace("<!--CONTENT-->", `<script>window.WS_CONTENT=${escapeJSON(c)};</script>`);
   res.setHeader("Cache-Control", "no-cache");
   res.type("html").send(html);

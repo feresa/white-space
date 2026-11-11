@@ -288,3 +288,7 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 700; letter-spacing: .
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+/* 設計師用：圖片區塊一律方角 */
+.crop, .focal, .row__thumb, .media, .media img, .img-item, .picker { border-radius: 0; }
+.focal__dot { border-radius: 50%; }

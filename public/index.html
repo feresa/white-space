@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{SITE_NAME}}</title>
   <meta name="description" content="{{DESCRIPTION}}">
-  <meta name="theme-color" content="#fbf8f1">
+  <meta name="theme-color" content="{{BANNER_COLOR}}">
   <meta property="og:type" content="website">
   <meta property="og:title" content="{{SITE_NAME}}">
   <meta property="og:description" content="{{DESCRIPTION}}">
@@ -13,27 +13,23 @@
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css">
+  <style>:root{--banner:{{BANNER_COLOR}}}</style>
 </head>
 <body>
   <a class="skip-link" href="#works">跳到內容</a>
 
   <!-- Banner -->
-  <header class="banner" id="top">
-    <div class="banner__bubbles" aria-hidden="true">
-      <span></span><span></span><span></span><span></span>
-    </div>
-
-    <button class="about-btn" type="button" data-open-about aria-label="關於我們">
-      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 11v6M12 7.5v.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-    </button>
-
+  <header class="banner {{BANNER_CLASS}}" id="top">
     <div class="banner__inner">
       <h1 class="banner__logo">
         <img src="/assets/logo.webp" width="975" height="816" alt="{{SITE_NAME}}">
       </h1>
       <p class="banner__tagline">{{TAGLINE}}</p>
+      <button class="about-btn" type="button" data-open-about aria-label="關於我們">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 11v6M12 7.5v.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
     </div>
   </header>
 
