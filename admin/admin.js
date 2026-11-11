@@ -265,7 +265,7 @@
       } });
     const images = h("div", { class: "panel" },
       h("h2", {}, "大圖"),
-      h("p", { class: "hint" }, "點開後最上方的圖，可以放好幾張讓讀者切換。拖不動的話用 ← → 調整順序。"),
+      h("p", { class: "hint" }, "第 1 張是文章最上方的滿版大圖（也是卡片縮圖），第 2 張起會接在文字後面，一張一張往下排。用 ← → 調整順序。"),
       imgList,
       h("div", { class: "add-row" },
         h("label", { class: "btn btn--primary" }, "上傳圖片", uploadInput),

@@ -13,7 +13,7 @@
   const filtersEl = document.getElementById("filters");
   const modal = document.getElementById("modal");
   const heroImg = document.getElementById("modal-hero");
-  const thumbs = document.getElementById("modal-thumbs");
+  const moreEl = document.getElementById("modal-more");
   const tagEl = document.getElementById("modal-tag");
   const titleEl = document.getElementById("modal-title");
   const figure = document.getElementById("modal-figure");
@@ -122,40 +122,27 @@
   }
 
   /* ---------- 彈出視窗 ---------- */
-  function showImage(list, idx) {
-    const swap = () => applyImage(heroImg, list[idx]);
-    if (heroImg.getAttribute("src")) {
-      heroImg.classList.add("is-fading");
-      setTimeout(() => { swap(); heroImg.classList.remove("is-fading"); }, 180);
-    } else swap();
-    [...thumbs.children].forEach((t, i) => t.setAttribute("aria-current", String(i === idx)));
-  }
-
   function fill(item) {
     tagEl.textContent = item.tag || "";
     tagEl.hidden = !item.tag;
     titleEl.textContent = item.title;
 
+    /* 第一張是上方滿版大圖，其餘的圖接在文字後面一張一張往下排 */
     const imgs = item.images || [];
     heroImg.removeAttribute("src");
     heroImg.parentElement.hidden = !imgs.length;
-    thumbs.innerHTML = "";
-    thumbs.hidden = imgs.length < 2;
-    if (imgs.length > 1) {
-      imgs.forEach((im, i) => {
-        const t = document.createElement("button");
-        t.type = "button";
-        t.className = "thumb";
-        t.setAttribute("aria-label", `第 ${i + 1} 張圖`);
-        const ti = document.createElement("img");
-        applyImage(ti, im);
-        ti.alt = "";
-        t.append(ti);
-        t.addEventListener("click", () => showImage(imgs, i));
-        thumbs.append(t);
-      });
-    }
-    if (imgs.length) showImage(imgs, 0);
+    if (imgs.length) applyImage(heroImg, imgs[0]);
+
+    moreEl.innerHTML = "";
+    imgs.slice(1).forEach(im => {
+      const fig = document.createElement("figure");
+      const img = document.createElement("img");
+      applyImage(img, im, { lazy: true });
+      img.style.transform = "none";            // 內文裡的圖直接顯示完整比例
+      img.style.objectFit = "contain";
+      fig.append(img);
+      moreEl.append(fig);
+    });
 
     if (item.figure) {
       figure.hidden = false;
