@@ -380,7 +380,7 @@
         input("網站描述", "description", { max: 300, multi: true, hint: "給搜尋引擎和社群分享用（Facebook、LINE 預覽）" }),
         input("頁尾文字", "footer", { max: 200 }),
         h("label", { class: "field" }, h("span", {}, "Banner 底色"),
-          h("input", { type: "color", value: s.bannerColor || "#f2dc6b", style: "width:120px;padding:4px",
+          h("input", { type: "color", value: s.bannerColor || "#ffffff", style: "width:120px;padding:4px",
             oninput: e => { s.bannerColor = e.target.value; changed(); } }),
           h("small", {}, "首頁最上方整條色塊的顏色。選深色時 Logo 會自動變白。"))),
       h("div", { class: "panel" },

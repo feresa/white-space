@@ -114,7 +114,7 @@ function addFail(ip) {
 const SRC_RE = /^\/(assets|uploads)\/[A-Za-z0-9._-]+$/;
 const POS_RE = /^\d{1,3}(\.\d+)?% \d{1,3}(\.\d+)?%$/;
 
-const DEFAULT_BANNER = "#f2dc6b";
+const DEFAULT_BANNER = "#ffffff";
 const colorOf = v => (/^#[0-9a-fA-F]{6}$/.test(v || "") ? v.toLowerCase() : DEFAULT_BANNER);
 const isDark = hex => {
   const [r, g, b] = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255)
