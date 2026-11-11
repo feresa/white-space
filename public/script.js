@@ -1,8 +1,16 @@
-(() => {
-  const items = window.WS_ITEMS || [];
-  const about = window.WS_ABOUT;
+(async () => {
+  /* 內容由伺服器放進 window.WS_CONTENT；沒有的話再去 API 拿 */
+  let data = window.WS_CONTENT;
+  if (!data) {
+    try { data = await (await fetch("/api/content")).json(); }
+    catch { data = { site: {}, about: null, items: [] }; }
+  }
+  const site = data.site || {};
+  const items = data.items || [];
+  const about = data.about;
 
   const grid = document.getElementById("grid");
+  const filtersEl = document.getElementById("filters");
   const modal = document.getElementById("modal");
   const heroImg = document.getElementById("modal-hero");
   const thumbs = document.getElementById("modal-thumbs");
@@ -12,31 +20,74 @@
   const textEl = document.getElementById("modal-text");
   const nextBtn = modal.querySelector("[data-next]");
   const toTop = document.querySelector(".to-top");
+  const aboutBtn = document.querySelector("[data-open-about]");
 
   let filter = "all";
-  let visible = items;          // 目前分類下看得到的卡片
-  let current = -1;             // 目前打開的是 visible 裡第幾張；-1 = 關於
-  let opener = null;            // 關閉後焦點回到原本的按鈕
+  let visible = items;
+  let current = -1;            // -1 = 關於
+  let opener = null;
 
-  /* 把圖片設定（位置 / 色調）套到 <img> */
-  function applyImage(img, data, { lazy = false } = {}) {
-    img.src = data.src;
-    img.alt = data.alt || "";
-    const pos = data.pos || "50% 50%";
-    img.style.objectPosition = pos;
-    img.style.transformOrigin = pos;
-    img.className = img.className.replace(/\btone-\S+/g, "").trim();
-    if (data.tone) img.classList.add("tone-" + data.tone);
+  document.getElementById("footer-text").textContent = site.footer || "";
+
+  /* 放大時讓焦點盡量落在畫面正中央（邊緣不留白） */
+  function zoomOrigin(pos, zoom) {
+    const z = Number(zoom) || 1;
+    const [x, y] = String(pos || "50% 50%").split(" ").map(parseFloat);
+    const f = v => (z > 1 ? Math.min(100, Math.max(0, (z * v - 50) / (z - 1))) : v);
+    return `${f(x)}% ${f(y)}%`;
+  }
+
+  /* 圖片：src / 焦點位置 / 替代文字 */
+  function applyImage(img, d, { lazy = false } = {}) {
+    if (!d) return;
+    img.src = d.src;
+    img.alt = d.alt || "";
+    img.style.objectPosition = d.pos || "50% 50%";
+    img.style.transformOrigin = zoomOrigin(d.pos, d.zoom);
+    img.style.setProperty("--z", d.zoom || 1);
     if (lazy) { img.loading = "lazy"; img.decoding = "async"; }
+  }
+
+  const paragraphs = text => String(text || "").split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+
+  /* ---------- 分類按鈕 ---------- */
+  function buildFilters() {
+    const cats = (site.categories || []).filter(c => items.some(i => i.tag === c));
+    if (!cats.length) { filtersEl.hidden = true; return; }
+    ["all", ...cats].forEach(c => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "filter" + (c === filter ? " is-active" : "");
+      b.dataset.filter = c;
+      b.textContent = c === "all" ? "全部" : c;
+      b.setAttribute("aria-pressed", String(c === filter));
+      b.addEventListener("click", () => {
+        filter = c;
+        filtersEl.querySelectorAll(".filter").forEach(x => {
+          const on = x === b;
+          x.classList.toggle("is-active", on);
+          x.setAttribute("aria-pressed", String(on));
+        });
+        render();
+      });
+      filtersEl.append(b);
+    });
   }
 
   /* ---------- 卡片 ---------- */
   function render() {
     visible = filter === "all" ? items : items.filter(i => i.tag === filter);
     grid.innerHTML = "";
+    if (!visible.length) {
+      const li = document.createElement("li");
+      li.className = "grid__empty";
+      li.textContent = "這裡還是一片留白。";
+      grid.append(li);
+      return;
+    }
     visible.forEach((item, i) => {
       const li = document.createElement("li");
-      li.style.animationDelay = `${i * 60}ms`;
+      li.style.animationDelay = `${Math.min(i, 8) * 60}ms`;
 
       const btn = document.createElement("button");
       btn.type = "button";
@@ -46,40 +97,35 @@
 
       const media = document.createElement("span");
       media.className = "card__media";
-      const img = document.createElement("img");
-      img.width = 400; img.height = 300;
-      applyImage(img, item.images[0], { lazy: true });
-      img.alt = "";                                   // 標題已經說明了，縮圖當裝飾
-      const tag = document.createElement("span");
-      tag.className = "card__tag";
-      tag.textContent = item.tag;
-      media.append(img, tag);
+      if (item.images[0]) {
+        const img = document.createElement("img");
+        img.width = 400; img.height = 300;
+        applyImage(img, item.images[0], { lazy: i > 2 });
+        img.alt = "";
+        media.append(img);
+      }
+      if (item.tag) {
+        const tag = document.createElement("span");
+        tag.className = "card__tag";
+        tag.textContent = item.tag;
+        media.append(tag);
+      }
 
       const title = document.createElement("span");
       title.className = "card__title";
       title.textContent = item.title;
 
-      const summary = document.createElement("span");
-      summary.className = "card__summary";
-      summary.textContent = item.summary;
-
-      btn.append(media, title, summary);
+      btn.append(media, title);
+      if (item.summary) {
+        const summary = document.createElement("span");
+        summary.className = "card__summary";
+        summary.textContent = item.summary;
+        btn.append(summary);
+      }
       li.append(btn);
       grid.append(li);
     });
   }
-
-  document.querySelectorAll(".filter").forEach(btn => {
-    btn.addEventListener("click", () => {
-      filter = btn.dataset.filter;
-      document.querySelectorAll(".filter").forEach(b => {
-        const on = b === btn;
-        b.classList.toggle("is-active", on);
-        b.setAttribute("aria-pressed", String(on));
-      });
-      render();
-    });
-  });
 
   /* ---------- 彈出視窗 ---------- */
   function showImage(list, idx) {
@@ -92,13 +138,17 @@
   }
 
   function fill(item) {
-    tagEl.textContent = item.tag;
+    tagEl.textContent = item.tag || "";
+    tagEl.hidden = !item.tag;
     titleEl.textContent = item.title;
 
+    const imgs = item.images || [];
     heroImg.removeAttribute("src");
+    heroImg.parentElement.hidden = !imgs.length;
     thumbs.innerHTML = "";
-    if (item.images.length > 1) {
-      item.images.forEach((im, i) => {
+    thumbs.hidden = imgs.length < 2;
+    if (imgs.length > 1) {
+      imgs.forEach((im, i) => {
         const t = document.createElement("button");
         t.type = "button";
         t.className = "thumb";
@@ -107,11 +157,11 @@
         applyImage(ti, im);
         ti.alt = "";
         t.append(ti);
-        t.addEventListener("click", () => showImage(item.images, i));
+        t.addEventListener("click", () => showImage(imgs, i));
         thumbs.append(t);
       });
     }
-    showImage(item.images, 0);
+    if (imgs.length) showImage(imgs, 0);
 
     if (item.figure) {
       figure.hidden = false;
@@ -119,7 +169,7 @@
     } else figure.hidden = true;
 
     textEl.innerHTML = "";
-    item.text.forEach(p => {
+    paragraphs(item.text).forEach(p => {
       const el = document.createElement("p");
       el.textContent = p;
       textEl.append(el);
@@ -139,8 +189,7 @@
     }
   }
 
-  function close() { modal.close(); }
-
+  const close = () => modal.close();
   function next(step = 1) {
     if (current < 0 || visible.length < 2) return;
     open((current + step + visible.length) % visible.length);
@@ -150,14 +199,9 @@
     document.body.classList.remove("modal-open");
     if (opener) opener.focus();
   });
-
   modal.querySelector("[data-close]").addEventListener("click", close);
   nextBtn.addEventListener("click", () => next(1));
-
-  // 點視窗外面（遮罩）就關閉
   modal.addEventListener("click", e => { if (e.target === modal) close(); });
-
-  // 鍵盤：← → 換篇（Esc 關閉是 <dialog> 內建）
   modal.addEventListener("keydown", e => {
     if (e.key === "ArrowRight") next(1);
     if (e.key === "ArrowLeft") next(-1);
@@ -174,7 +218,8 @@
     sx = sy = null;
   });
 
-  document.querySelector("[data-open-about]").addEventListener("click", e => open(-1, e.currentTarget));
+  if (about && about.title) aboutBtn.addEventListener("click", e => open(-1, e.currentTarget));
+  else aboutBtn.hidden = true;
 
   /* ---------- 回到頂端 ---------- */
   const onScroll = () => toTop.classList.toggle("is-visible", window.scrollY > 400);
@@ -182,9 +227,9 @@
   onScroll();
   toTop.addEventListener("click", () => {
     window.scrollTo({ top: 0 });
-    document.querySelector(".about-btn").focus({ preventScroll: true });
+    aboutBtn.focus({ preventScroll: true });
   });
 
-  document.getElementById("year").textContent = new Date().getFullYear();
+  buildFilters();
   render();
 })();

@@ -3,15 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>留白教室 White Space</title>
-  <meta name="description" content="留白教室 White Space｜留一點白，找到自己的空間。">
-  <meta property="og:title" content="留白教室 White Space">
-  <meta property="og:description" content="留一點白，找到自己的空間。">
-  <meta property="og:image" content="assets/illust-pink.webp">
+  <title>{{SITE_NAME}}</title>
+  <meta name="description" content="{{DESCRIPTION}}">
+  <meta name="theme-color" content="#fbf8f1">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{SITE_NAME}}">
+  <meta property="og:description" content="{{DESCRIPTION}}">
+  <meta property="og:image" content="{{OG_IMAGE}}">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
   <a class="skip-link" href="#works">跳到內容</a>
@@ -22,30 +25,27 @@
       <span></span><span></span><span></span><span></span>
     </div>
 
-    <button class="about-btn" type="button" data-open-about aria-label="關於留白教室">
+    <button class="about-btn" type="button" data-open-about aria-label="關於我們">
       <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 11v6M12 7.5v.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
     </button>
 
     <div class="banner__inner">
       <h1 class="banner__logo">
-        <img src="assets/logo.webp" width="975" height="816" alt="留白教室 White Space">
+        <img src="/assets/logo.webp" width="975" height="816" alt="{{SITE_NAME}}">
       </h1>
-      <p class="banner__tagline">留一點白，找到自己的空間</p>
+      <p class="banner__tagline">{{TAGLINE}}</p>
     </div>
   </header>
 
   <main id="works">
-    <nav class="filters" aria-label="分類">
-      <button type="button" class="filter is-active" data-filter="all" aria-pressed="true">全部</button>
-      <button type="button" class="filter" data-filter="課程" aria-pressed="false">課程</button>
-      <button type="button" class="filter" data-filter="手記" aria-pressed="false">手記</button>
+    <nav class="filters" id="filters" aria-label="分類">
     </nav>
 
     <ul class="grid" id="grid" aria-live="polite"></ul>
   </main>
 
   <footer class="footer">
-    <p>© <span id="year"></span> 留白教室 White Space</p>
+    <p id="footer-text"></p>
   </footer>
 
   <button class="to-top" type="button" aria-label="回到頁首">
@@ -81,7 +81,7 @@
     </div>
   </dialog>
 
-  <script src="content.js"></script>
-  <script src="script.js"></script>
+  <!--CONTENT-->
+  <script src="/script.js"></script>
 </body>
 </html>

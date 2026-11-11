@@ -1,0 +1,26 @@
+{
+  "name": "white-space",
+  "version": "1.0.0",
+  "description": "留白教室網站與後台",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/feresa/white-space.git"
+  },
+  "bugs": {
+    "url": "https://github.com/feresa/white-space/issues"
+  },
+  "homepage": "https://github.com/feresa/white-space#readme",
+  "dependencies": {
+    "express": "^4.22.3",
+    "multer": "^2.5.0"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  }
+}
