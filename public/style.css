@@ -61,24 +61,14 @@ button { font: inherit; color: inherit; cursor: pointer; }
   position: relative;
   max-width: var(--wrap);
   margin: 0 auto;
-  padding: clamp(56px, 10vw, 120px) var(--s3) clamp(48px, 8vw, 96px);
+  padding: clamp(28px, 4vw, 44px) var(--s3);
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
+  justify-content: center;
 }
-.banner__logo { margin: 0; width: min(380px, 72vw); }
+.banner__logo { margin: 0; width: min(240px, 56vw); }
 .banner__logo img {
   width: 100%; height: auto;
   animation: fade .8s var(--ease) both;
-}
-.banner__tagline {
-  margin: var(--s3) 0 0;
-  font-size: clamp(15px, 2.4vw, 18px);
-  font-weight: 500;
-  letter-spacing: .3em;
-  text-indent: .3em;                 /* 補償最後一字的字距，讓文字真正置中 */
-  animation: fade .8s .15s var(--ease) both;
 }
 
 .banner--dark { color: #fff; }

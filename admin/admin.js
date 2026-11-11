@@ -376,7 +376,7 @@
       h("div", { class: "panel" },
         h("h2", {}, "基本資料"),
         input("網站名稱", "name", { max: 60, hint: "會出現在瀏覽器分頁和分享連結上" }),
-        input("Banner 標語", "tagline", { max: 120, hint: "Logo 下方那一行字" }),
+        input("網站標語", "tagline", { max: 120, hint: "不會顯示在首頁。只在「網站描述」留空時，當作社群分享的描述文字" }),
         input("網站描述", "description", { max: 300, multi: true, hint: "給搜尋引擎和社群分享用（Facebook、LINE 預覽）" }),
         input("頁尾文字", "footer", { max: 200 }),
         h("label", { class: "field" }, h("span", {}, "Banner 底色"),
