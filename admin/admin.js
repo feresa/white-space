@@ -453,7 +453,6 @@
     const [tab, sub] = (location.hash.slice(1) || "cards").split("/");
     document.querySelectorAll(".tabs a").forEach(a => { if (a.dataset.tab === tab) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
     if (tab === "cards" && sub) renderCardEditor(sub);
-    else if (tab === "about") renderAbout();
     else if (tab === "settings") renderSettings();
     else if (tab === "media") renderMedia();
     else if (tab === "account") renderAccount();

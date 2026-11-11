@@ -78,56 +78,15 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .banner--dark { color: #fff; }
 .banner--dark .banner__logo img { filter: invert(1); }
 
-.about-btn {
-  position: absolute;
-  top: var(--s2); right: var(--s3);
-  width: 44px; height: 44px;
-  display: grid; place-items: center;
-  border: 2px solid currentColor;
-  background: transparent;
-  color: inherit;
-  transition: background .15s, color .15s;
-}
-.about-btn:hover { background: var(--ink); color: var(--banner); }
-.banner--dark .about-btn:hover { background: #fff; color: var(--ink); }
-
-@media (max-width: 640px) {
-  .banner { --banner-h: 239px; }
-  .about-btn { top: 8px; right: 8px; width: 40px; height: 40px; }
-}
-
 /* ==========================================================
-   分類：文字分頁，底線標示目前
+   主內容
    ========================================================== */
 main {
   max-width: var(--wrap);
   margin: 0 auto;
-  padding: var(--s3) var(--s3) var(--s6);
+  padding: var(--s4) var(--s3) var(--s6);
 }
 @media (max-width: 640px) { main { padding: var(--s2) var(--s2) var(--s5); } }
-
-.filters {
-  display: flex; gap: var(--s3);
-  margin-bottom: var(--s4);
-  border-bottom: 1px solid var(--line);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.filter {
-  flex: none;
-  min-height: 48px;
-  padding: 0;
-  border: 0;
-  border-bottom: 3px solid transparent;
-  margin-bottom: -1px;
-  background: none;
-  color: var(--ink-soft);
-  font-size: 16px;
-  letter-spacing: .08em;
-  transition: color .15s, border-color .15s;
-}
-.filter:hover { color: var(--ink); }
-.filter.is-active { color: var(--ink); border-bottom-color: var(--ink); font-weight: 700; }
 
 /* ==========================================================
    卡片格狀

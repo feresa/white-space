@@ -3,14 +3,12 @@
   let data = window.WS_CONTENT;
   if (!data) {
     try { data = await (await fetch("/api/content")).json(); }
-    catch { data = { site: {}, about: null, items: [] }; }
+    catch { data = { site: {}, items: [] }; }
   }
   const site = data.site || {};
   const items = data.items || [];
-  const about = data.about;
 
   const grid = document.getElementById("grid");
-  const filtersEl = document.getElementById("filters");
   const modal = document.getElementById("modal");
   const heroImg = document.getElementById("modal-hero");
   const moreEl = document.getElementById("modal-more");
@@ -20,11 +18,10 @@
   const textEl = document.getElementById("modal-text");
   const nextBtn = modal.querySelector("[data-next]");
   const toTop = document.querySelector(".to-top");
-  const aboutBtn = document.querySelector("[data-open-about]");
 
   let filter = "all";
   let visible = items;
-  let current = -1;            // -1 = 關於
+  let current = -1;
   let opener = null;
 
   document.getElementById("footer-text").textContent = site.footer || "";
@@ -49,30 +46,6 @@
   }
 
   const paragraphs = text => String(text || "").split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
-
-  /* ---------- 分類按鈕 ---------- */
-  function buildFilters() {
-    const cats = (site.categories || []).filter(c => items.some(i => i.tag === c));
-    if (!cats.length) { filtersEl.hidden = true; return; }
-    ["all", ...cats].forEach(c => {
-      const b = document.createElement("button");
-      b.type = "button";
-      b.className = "filter" + (c === filter ? " is-active" : "");
-      b.dataset.filter = c;
-      b.textContent = c === "all" ? "全部" : c;
-      b.setAttribute("aria-pressed", String(c === filter));
-      b.addEventListener("click", () => {
-        filter = c;
-        filtersEl.querySelectorAll(".filter").forEach(x => {
-          const on = x === b;
-          x.classList.toggle("is-active", on);
-          x.setAttribute("aria-pressed", String(on));
-        });
-        render();
-      });
-      filtersEl.append(b);
-    });
-  }
 
   /* ---------- 卡片 ---------- */
   function render() {
@@ -161,8 +134,8 @@
 
   function open(idx, trigger) {
     current = idx;
-    fill(idx === -1 ? about : visible[idx]);
-    nextBtn.hidden = idx === -1 || visible.length < 2;
+    fill(visible[idx]);
+    nextBtn.hidden = visible.length < 2;
     if (!modal.open) {
       opener = trigger || null;
       modal.showModal();
@@ -172,7 +145,7 @@
 
   const close = () => modal.close();
   function next(step = 1) {
-    if (current < 0 || visible.length < 2) return;
+    if (visible.length < 2) return;
     open((current + step + visible.length) % visible.length);
   }
 
@@ -199,18 +172,14 @@
     sx = sy = null;
   });
 
-  if (about && about.title) aboutBtn.addEventListener("click", e => open(-1, e.currentTarget));
-  else aboutBtn.hidden = true;
-
   /* ---------- 回到頂端 ---------- */
   const onScroll = () => toTop.classList.toggle("is-visible", window.scrollY > 400);
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
   toTop.addEventListener("click", () => {
     window.scrollTo({ top: 0 });
-    aboutBtn.focus({ preventScroll: true });
+    document.getElementById("top").focus({ preventScroll: true });
   });
 
-  buildFilters();
   render();
 })();
