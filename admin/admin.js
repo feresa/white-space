@@ -6,6 +6,7 @@
   let doc = null;          // 正在編輯的內容
   let savedJSON = "";      // 上次儲存的版本
   let editing = null;      // 正在編輯的卡片 id
+  let canChangePassword = true;
 
   /* ---------- 小工具 ---------- */
   function h(tag, attrs = {}, ...kids) {
@@ -53,6 +54,7 @@
     let data = null;
     try { data = await res.json(); } catch {}
     if (res.status === 401 && path !== "/login" && path !== "/password") { showLogin(); throw new Error("請重新登入"); }
+    if (res.status === 413) throw new Error("檔案太大，請換小一點的圖（4MB 以內）");
     if (!res.ok) throw new Error((data && data.error) || "發生錯誤");
     return data;
   }
@@ -91,27 +93,40 @@
   /* ---------- 上傳（大圖先在瀏覽器縮小） ---------- */
   async function shrink(file) {
     if (!/^image\/(jpeg|png|webp)$/.test(file.type)) return file;
+    const LIMIT = 3.6 * 1024 * 1024;                 // 線上版單次請求上限約 4.5MB，留一點餘裕
     try {
       const bmp = await createImageBitmap(file);
-      const max = 2400;
-      const scale = Math.min(1, max / Math.max(bmp.width, bmp.height));
-      if (scale === 1 && file.size < 1.5 * 1024 * 1024) return file;
-      const c = document.createElement("canvas");
-      c.width = Math.round(bmp.width * scale); c.height = Math.round(bmp.height * scale);
-      c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
-      const blob = await new Promise(r => c.toBlob(r, "image/webp", 0.86));
-      return blob && blob.size < file.size ? new File([blob], file.name.replace(/\.\w+$/, ".webp"), { type: "image/webp" }) : file;
+      let max = 2400, q = 0.86;
+      const scale0 = Math.min(1, max / Math.max(bmp.width, bmp.height));
+      if (scale0 === 1 && file.size < 1.5 * 1024 * 1024) return file;
+      let best = null;
+      for (let i = 0; i < 4; i++) {
+        const scale = Math.min(1, max / Math.max(bmp.width, bmp.height));
+        const c = document.createElement("canvas");
+        c.width = Math.round(bmp.width * scale); c.height = Math.round(bmp.height * scale);
+        c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+        const blob = await new Promise(r => c.toBlob(r, "image/webp", q));
+        if (!blob) break;
+        best = blob;
+        if (blob.size <= LIMIT) break;
+        max = Math.round(max * 0.8); q = Math.max(0.6, q - 0.08);
+      }
+      return best && best.size < file.size ? new File([best], file.name.replace(/\.\w+$/, ".webp"), { type: "image/webp" }) : file;
     } catch { return file; }
   }
   async function uploadFiles(fileList) {
     const files = [...fileList];
     if (!files.length) return [];
-    toast(`上傳中…（${files.length} 張）`);
-    const fd = new FormData();
-    for (const f of files) fd.append("files", await shrink(f));
-    const r = await api("/upload", { method: "POST", body: fd });
-    toast(`已上傳 ${r.files.length} 張`);
-    return r.files.map(f => ({ src: f.src, pos: "50% 50%", zoom: 1, alt: "" }));
+    const out = [];
+    for (let i = 0; i < files.length; i++) {            // 一張一張傳，避免超過單次請求上限
+      toast(`上傳中… ${i + 1} / ${files.length}`);
+      const fd = new FormData();
+      fd.append("files", await shrink(files[i]));
+      const r = await api("/upload", { method: "POST", body: fd });
+      out.push(...r.files);
+    }
+    toast(`已上傳 ${out.length} 張`);
+    return out.map(f => ({ src: f.src, pos: "50% 50%", zoom: 1, alt: "" }));
   }
 
   /* ---------- 圖庫選圖 ---------- */
@@ -440,7 +455,9 @@
 
     view.replaceChildren(
       h("div", { class: "view__head" }, h("h1", {}, "帳號")),
-      form,
+      canChangePassword ? form : h("div", { class: "panel" },
+        h("h2", {}, "後台密碼"),
+        h("p", { class: "hint" }, "網站在線上運作時，後台密碼存在 Vercel 專案的環境變數 ADMIN_PASSWORD。要換密碼，到 Vercel 專案的 Settings → Environment Variables 修改，再重新部署一次即可。")),
       h("div", { class: "panel" },
         h("h2", {}, "備份"),
         h("p", { class: "hint" }, "下載所有文字內容（JSON 檔）。系統每次儲存也會自動保留最近 30 份備份。"),
@@ -483,6 +500,7 @@
     $("#login-error").textContent = "";
     try {
       await api("/login", { method: "POST", json: { password: e.target.password.value } });
+      try { canChangePassword = (await api("/me")).canChangePassword !== false; } catch {}
       e.target.reset();
       await showApp();
     } catch (err) { $("#login-error").textContent = err.message; }
@@ -496,5 +514,5 @@
     showLogin();
   });
 
-  api("/me").then(r => (r.authed ? showApp() : showLogin())).catch(showLogin);
+  api("/me").then(r => { canChangePassword = r.canChangePassword !== false; return r.authed ? showApp() : showLogin(); }).catch(showLogin);
 })();

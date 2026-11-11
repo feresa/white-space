@@ -44,7 +44,21 @@ ADMIN_PASSWORD=你的密碼 npm start
 **部署時請把 `data/` 放在會保留的磁碟上**（例如 VPS、Fly.io volume、Railway volume）。
 在每次重啟就清空檔案的平台（例如純 Vercel）上，後台的修改會消失。
 
-## 上線建議
+## 部署到 Vercel（公開網站）
+
+網站已經設定好可以直接部署到 Vercel，內容與圖片存在 Vercel Blob（私有儲存），後台改的內容會永久保存。
+
+1. 在 Vercel 匯入這個 GitHub 專案
+2. 專案的 Storage 分頁建立一個 **Blob** 儲存空間（Private），連結到專案
+3. Settings → Environment Variables 新增 `ADMIN_PASSWORD`（後台密碼，必填）
+4. 部署
+
+線上版和本機版的差別：
+- 後台密碼由環境變數 `ADMIN_PASSWORD` 控制（要換密碼就改它並重新部署）
+- 單張上傳圖片上限 4MB（後台會先自動縮圖）
+- 前台頁面會被 CDN 快取 10 秒，所以後台儲存後約 10 秒內網站更新
+
+## 其他上線方式
 
 - 用 Nginx / Caddy 或平台提供的 HTTPS，並設定 `TRUST_PROXY=1`
 - 環境變數：`PORT`、`ADMIN_PASSWORD`、`DATA_DIR`、`TRUST_PROXY`
@@ -60,7 +74,10 @@ ADMIN_PASSWORD=你的密碼 npm start
 
 ```
 server.js        伺服器與 API
-public/          前台（index.html / style.css / script.js / assets）
+storage.js       儲存層（本機檔案 / Vercel Blob）
+api/index.js     Vercel 進入點
+views/index.html 首頁範本
+public/          前台（style.css / script.js / assets）
 admin/           後台
 seed/content.json  第一次啟動時的初始內容
 .claude/skills/  ui-ux-pro-max 設計 skill
