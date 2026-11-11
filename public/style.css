@@ -57,26 +57,43 @@ button { font: inherit; color: inherit; cursor: pointer; }
   background: var(--banner);
   color: var(--ink);
 }
+/* Banner 版面：整條高度固定（含底線）。
+   --gap      ＝ 「Logo 的字」到線、線到卡片 之間的視覺空白（三處相等：上緣、線上、線下）
+   Logo 圖檔本身上下各有 4.9% 的留白（40 / 816），所以要從 --gap 裡扣掉，視覺距離才會真的相等 */
 .banner {
-  --banner-h: 289px;                 /* Banner 高度；Logo 撐滿整個高度（Logo 圖本身已有留白） */
+  --banner-h: 289px;
+  --gap: 32px;
+  --ws: .049;                                                         /* Logo 圖檔留白 ÷ 圖高 */
+  --logo-h: calc((var(--banner-h) - 1px - 2 * var(--gap)) / (1 - 2 * var(--ws)));
+  --pad: calc(var(--gap) - var(--logo-h) * var(--ws));                /* 補足的實際間距 */
 }
 .banner__inner {
-  position: relative;
   max-width: var(--wrap);
   margin: 0 auto;
-  padding: 0 var(--s3);
-  height: var(--banner-h);
+  padding: var(--pad) var(--s3) 0;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 }
-.banner__logo { margin: 0; height: 100%; }
+.banner__logo { margin: 0; height: var(--logo-h); }
 .banner__logo img {
   height: 100%; width: auto;
   animation: fade .8s var(--ease) both;
 }
+.banner__inner::after {                    /* Logo 下方的線 */
+  content: "";
+  align-self: stretch;
+  height: 1px;
+  margin-top: var(--pad);
+  background: currentColor;
+}
 
 .banner--dark { color: #fff; }
 .banner--dark .banner__logo img { filter: invert(1); }
+
+@media (max-width: 640px) {
+  .banner { --banner-h: 239px; --gap: 24px; }
+}
 
 /* ==========================================================
    主內容
@@ -84,9 +101,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 main {
   max-width: var(--wrap);
   margin: 0 auto;
-  padding: var(--s4) var(--s3) var(--s6);
+  padding: 32px var(--s3) var(--s6);
 }
-@media (max-width: 640px) { main { padding: var(--s2) var(--s2) var(--s5); } }
+@media (max-width: 640px) { main { padding: 24px var(--s2) var(--s5); } }
 
 /* ==========================================================
    卡片格狀
@@ -110,7 +127,7 @@ main {
 .card__media {
   display: block;
   position: relative;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
   background: var(--placeholder);
 }
