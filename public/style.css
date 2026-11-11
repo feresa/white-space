@@ -53,30 +53,31 @@ button { font: inherit; color: inherit; cursor: pointer; }
    Banner：整條純色、窄版
    ========================================================== */
 .banner {
+  position: relative;
   background: var(--banner);
   color: var(--ink);
 }
 .banner__inner {
+  position: relative;
   max-width: var(--wrap);
   margin: 0 auto;
-  padding: 10px var(--s3);
-  min-height: 132px;
+  padding: clamp(56px, 10vw, 120px) var(--s3) clamp(48px, 8vw, 96px);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--s3);
+  text-align: center;
 }
-.banner__logo { margin: 0; flex: none; }
+.banner__logo { margin: 0; width: min(380px, 72vw); }
 .banner__logo img {
-  height: 112px; width: auto;
+  width: 100%; height: auto;
   animation: fade .8s var(--ease) both;
 }
 .banner__tagline {
-  margin: 0;
-  font-size: 15px;
+  margin: var(--s3) 0 0;
+  font-size: clamp(15px, 2.4vw, 18px);
   font-weight: 500;
   letter-spacing: .3em;
-  padding-left: var(--s3);
-  border-left: 2px solid currentColor;
+  text-indent: .3em;                 /* 補償最後一字的字距，讓文字真正置中 */
   animation: fade .8s .15s var(--ease) both;
 }
 
@@ -84,7 +85,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .banner--dark .banner__logo img { filter: invert(1); }
 
 .about-btn {
-  margin-left: auto;
+  position: absolute;
+  top: var(--s2); right: var(--s3);
   width: 44px; height: 44px;
   display: grid; place-items: center;
   border: 2px solid currentColor;
@@ -96,14 +98,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .banner--dark .about-btn:hover { background: #fff; color: var(--ink); }
 
 @media (max-width: 640px) {
-  .banner__inner { padding: 8px var(--s2); min-height: 96px; gap: var(--s2); }
-  .banner__logo img { height: 80px; }
-  .banner__tagline { flex: 1; min-width: 0; font-size: 13px; letter-spacing: .2em; padding-left: var(--s2); }
-  .about-btn { margin-left: 0; flex: none; }
-}
-@media (max-width: 400px) {
-  .banner__tagline { display: none; }
-  .about-btn { margin-left: auto; }
+  .about-btn { right: var(--s2); }
 }
 
 /* ==========================================================
