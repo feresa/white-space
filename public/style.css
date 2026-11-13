@@ -82,8 +82,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
   animation: fade .8s var(--ease) both;
 }
 
-/* ---------- 選單：每一項是一張圖（設計稿切出來的向量圖，36px 高），項目均分，下方一條線 ----------
-   圖的上緣比圖示高 4px、下緣比圖示低 4px，所以 margin / padding 要各扣掉對應的量 */
+/* ---------- 選單：圖示（設計稿的線條圖，36px 高）+ 文字（Nunito 800），項目均分，下方一條線 ----------
+   圖示上緣比圖形高 4px、下緣低 4px，所以 margin / padding 要各扣掉對應的量 */
 .menu {
   align-self: stretch;
   margin-top: calc(var(--mid) - var(--logo-pad) - 4px);
@@ -93,18 +93,25 @@ button { font: inherit; color: inherit; cursor: pointer; }
   align-items: center;
   gap: 8px 24px;
   border-bottom: 1px solid currentColor;
+  font-family: "Nunito", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  font-weight: 800;
+  font-size: 15.5px;                                            /* 字高對設計稿：大寫字高約 11px */
+  letter-spacing: .054em;                                       /* ≈ 0.84px */
+  -webkit-text-stroke: .3px currentColor;                         /* 設計稿的字比 Nunito 800 再稍微粗一點 */
+  line-height: 1;
   animation: fade .8s .1s var(--ease) both;
 }
 .menu:empty { padding-bottom: 0; }
 .menu__item {
   display: inline-flex;
   align-items: center;
+  gap: 12px;
   color: inherit;
   text-decoration: none;
   white-space: nowrap;
 }
-.menu__img { display: block; height: 36px; width: auto; }
-.menu__text { font-size: 16px; font-weight: 700; letter-spacing: .06em; }          /* 沒有圖的項目顯示文字 */
+.menu__img { display: block; height: 36px; width: auto; flex: none; }
+.menu__text { position: relative; top: 3px; }                  /* 設計稿的文字比圖示中心低約 3px */
 a.menu__item { transition: opacity .15s; }
 @media (hover: hover) { a.menu__item:hover { opacity: .55; } }
 a.menu__item:focus-visible { outline-offset: 4px; }
@@ -113,10 +120,12 @@ a.menu__item:focus-visible { outline-offset: 4px; }
 .banner--dark { color: #fff; }
 .banner--dark .banner__logo img, .banner--dark .menu__img { filter: invert(1); }
 
-/* 平板：選單項目比較擠，圖縮小一點 */
+/* 平板：選單項目比較擠，縮小一點 */
 @media (max-width: 1000px) {
-  .menu { gap: 4px 12px; padding-inline: 12px; }
+  .menu { gap: 4px 12px; padding-inline: 12px; font-size: 14px; }
+  .menu__item { gap: 8px; }
   .menu__img { height: 30px; }
+  .menu__text { top: 2px; }
 }
 /* 手機：Logo 縮小，選單換行置中 */
 @media (max-width: 640px) {

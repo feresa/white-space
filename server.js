@@ -133,16 +133,18 @@ const isDark = hex => {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.35;
 };
 
-/* 首頁選單：每一項是一張圖（設計稿裡切出來的，向量 SVG）+ 名稱（給看不到圖的人）+ 連結。沒有設定過就用這組預設 */
+/* 首頁選單：每一項 = 圖示（設計稿切出來的線條向量圖，可不放）+ 文字 + 連結。沒有設定過就用這組預設 */
 const DEFAULT_MENU = [
-  { label: "Bulletin Board", image: "/assets/menu/board.svg", href: "#works" },
-  { label: "Teacher", image: "/assets/menu/teacher.svg", href: "" },
-  { label: "Classroom Activities", image: "/assets/menu/activities.svg", href: "" },
-  { label: "Weekly diary", image: "/assets/menu/diary.svg", href: "" },
-  { label: "Instagram", image: "/assets/menu/instagram.svg", href: "" }
+  { label: "Bulletin Board", image: "/assets/menu/icon-board.svg", href: "#works" },
+  { label: "Teacher", image: "/assets/menu/icon-teacher.svg", href: "" },
+  { label: "Classroom Activities", image: "/assets/menu/icon-activities.svg", href: "" },
+  { label: "Weekly diary", image: "/assets/menu/icon-diary.svg", href: "" },
+  { label: "Instagram", image: "/assets/menu/icon-instagram.svg", href: "" }
 ];
-const OLD_ICON_IMAGE = { board: "board", owl: "teacher", plane: "activities", book: "diary", instagram: "instagram" };  // 舊版的圖示欄位 → 對應圖
-// 內建的選單圖（SVG，只放在 assets/menu/）或上傳／內建的點陣圖；上傳區不收 SVG
+// 舊版資料的轉換：舊的 icon 欄位、以及「整張選單圖（圖示+文字）」都換成現在的純圖示
+const OLD_ICON_IMAGE = { board: "board", owl: "teacher", plane: "activities", book: "diary", instagram: "instagram" };
+const OLD_FULL_IMAGE = /^\/assets\/menu\/(board|teacher|activities|diary|instagram)\.svg$/;
+// 內建的選單圖示（SVG，只放在 assets/menu/）或上傳／內建的點陣圖；上傳區不收 SVG
 const MENU_IMG_RE = /^\/(assets\/menu\/[A-Za-z0-9_-]+\.svg|(assets|uploads)\/[A-Za-z0-9._-]+\.(jpe?g|png|webp|gif|avif))$/i;
 const HREF_RE = /^(#[\w-]*|\/(?!\/)[^\s]*|https?:\/\/[^\s]+|mailto:[^\s]+)$/i;
 function cleanMenu(list) {
@@ -151,7 +153,9 @@ function cleanMenu(list) {
     m = m && typeof m === "object" ? m : {};
     const href = typeof m.href === "string" ? m.href.trim().slice(0, 300) : "";
     let image = typeof m.image === "string" ? m.image : "";
-    if (!image && OLD_ICON_IMAGE[m.icon]) image = `/assets/menu/${OLD_ICON_IMAGE[m.icon]}.svg`;
+    if (!image && OLD_ICON_IMAGE[m.icon]) image = `/assets/menu/icon-${OLD_ICON_IMAGE[m.icon]}.svg`;
+    const full = OLD_FULL_IMAGE.exec(image);
+    if (full) image = `/assets/menu/icon-${full[1]}.svg`;
     return {
       label: str(m.label, 40),
       image: MENU_IMG_RE.test(image) ? image : "",
@@ -259,10 +263,9 @@ const escapeHTML = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<":
 
 function renderMenu(menu) {
   return (menu || []).map(m => {
-    // 有圖就放圖（名稱當替代文字）；沒圖就顯示文字
-    const inner = m.image
-      ? `<img class="menu__img" src="${escapeHTML(m.image)}" alt="${escapeHTML(m.label)}" decoding="async">`
-      : `<span class="menu__text">${escapeHTML(m.label)}</span>`;
+    // 圖示是裝飾（旁邊就有文字），所以 alt 留空
+    const inner = (m.image ? `<img class="menu__img" src="${escapeHTML(m.image)}" alt="" decoding="async">` : "")
+      + `<span class="menu__text">${escapeHTML(m.label)}</span>`;
     if (!m.href) return `<span class="menu__item">${inner}</span>`;
     const ext = /^https?:/i.test(m.href) ? ' target="_blank" rel="noopener"' : "";
     return `<a class="menu__item" href="${escapeHTML(m.href)}"${ext}>${inner}</a>`;

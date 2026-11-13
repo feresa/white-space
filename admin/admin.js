@@ -411,11 +411,11 @@
 
   /* ---------- 首頁選單 ---------- */
   const DEFAULT_MENU = [
-    { label: "Bulletin Board", image: "/assets/menu/board.svg", href: "#works" },
-    { label: "Teacher", image: "/assets/menu/teacher.svg", href: "" },
-    { label: "Classroom Activities", image: "/assets/menu/activities.svg", href: "" },
-    { label: "Weekly diary", image: "/assets/menu/diary.svg", href: "" },
-    { label: "Instagram", image: "/assets/menu/instagram.svg", href: "" }
+    { label: "Bulletin Board", image: "/assets/menu/icon-board.svg", href: "#works" },
+    { label: "Teacher", image: "/assets/menu/icon-teacher.svg", href: "" },
+    { label: "Classroom Activities", image: "/assets/menu/icon-activities.svg", href: "" },
+    { label: "Weekly diary", image: "/assets/menu/icon-diary.svg", href: "" },
+    { label: "Instagram", image: "/assets/menu/icon-instagram.svg", href: "" }
   ];
   function menuPanel() {
     const s = doc.site;
@@ -427,13 +427,13 @@
       const upload = h("input", { type: "file", accept: "image/*", hidden: true,
         onchange: async e => { try { const [img] = await uploadFiles(e.target.files); if (img) { m.image = img.src; changed(); redraw(); } } catch (err) { toast(err.message, true); } } });
       list.append(h("div", { class: "menu-row" },
-        h("div", { class: "field menu-row__img" }, h("span", {}, "圖片"),
-          h("div", { class: "menu-thumb" }, m.image ? h("img", { src: m.image, alt: "" }) : h("em", {}, "沒有圖：首頁會顯示文字")),
+        h("div", { class: "field menu-row__img" }, h("span", {}, "圖示（可不放）"),
+          h("div", { class: "menu-thumb" }, m.image ? h("img", { src: m.image, alt: "" }) : h("em", {}, "沒有圖示，只顯示文字")),
           h("div", { class: "menu-row__imgbtns" },
             h("label", { class: "btn btn--sm" }, "上傳", upload),
             h("button", { class: "btn btn--sm", type: "button", onclick: async () => { const img = await pickImage(); if (img) { m.image = img.src; changed(); redraw(); } } }, "從圖庫選"),
             m.image && h("button", { class: "btn btn--sm btn--danger", type: "button", onclick: () => { m.image = ""; changed(); redraw(); } }, "清除"))),
-        h("label", { class: "field" }, h("span", {}, "名稱（給看不到圖的人 / 沒圖時顯示）"),
+        h("label", { class: "field" }, h("span", {}, "文字"),
           h("input", { type: "text", value: m.label || "", maxlength: "40", oninput: e => { m.label = e.target.value; changed(); } })),
         h("label", { class: "field menu-row__href" }, h("span", {}, "連結"),
           h("input", { type: "text", value: m.href || "", maxlength: "300", placeholder: "例如 #works、/about 或 https://instagram.com/…",
@@ -446,7 +446,7 @@
     if (!s.menu.length) list.append(h("p", { class: "empty" }, "沒有選單項目（首頁只會顯示 Logo 下方的線）"));
     return h("div", { class: "panel" },
       h("h2", {}, "首頁選單"),
-      h("p", { class: "hint" }, "Logo 下方那一排，最多 8 個，由上到下就是由左到右。每一項放一張圖（高度會縮放成 36px，建議寬度比高度長、背景透明的 PNG / WebP）。連結留空的話，那一項會顯示但點不動。\n#works 是捲到作品區；也可以填 https:// 開頭的網址（會在新分頁開啟）。"),
+      h("p", { class: "hint" }, "Logo 下方那一排，最多 8 個，由上到下就是由左到右。每一項由「圖示 + 文字」組成（文字用 Nunito 粗體）。圖示高度會縮放成 36px，建議用背景透明的 PNG / WebP，也可以不放。連結留空的話，那一項會顯示但點不動。\n#works 是捲到作品區；也可以填 https:// 開頭的網址（會在新分頁開啟）。"),
       list,
       h("div", { class: "add-row" },
         s.menu.length < 8 && h("button", { class: "btn", type: "button", onclick: () => { s.menu.push({ label: "新項目", image: "", href: "" }); changed(); redraw(); } }, "＋ 新增選單項目"),
