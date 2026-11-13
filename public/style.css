@@ -17,6 +17,7 @@
 
   --s1: 8px; --s2: 16px; --s3: 24px; --s4: 32px; --s5: 48px; --s6: 72px;
   --wrap: 1200px;
+  --menu-below: 56px;                                          /* 選單底線 → 卡片 */
   --ease: cubic-bezier(.22, .61, .36, 1);
 }
 
@@ -57,20 +58,20 @@ button { font: inherit; color: inherit; cursor: pointer; }
   background: var(--banner);
   color: var(--ink);
 }
-/* Banner 版面：整條高度固定（含底線）。
-   --gap      ＝ 「Logo 的字」到線、線到卡片 之間的視覺空白（三處相等：上緣、線上、線下）
-   Logo 圖檔本身上下各有 4.9% 的留白（40 / 816），所以要從 --gap 裡扣掉，視覺距離才會真的相等 */
+/* Banner 版面（比例取自設計稿，1920 寬的畫面）
+   logo 字高約 225px；上緣、logo→選單 各約 100px；選單文字下 7px 接底線；線→卡片約 56px（--menu-below）
+   Logo 圖檔本身上下各有 4.9% 的留白（40 / 816），算空白時要扣掉，視覺距離才會準 */
 .banner {
-  --banner-h: 289px;
-  --gap: 32px;
-  --ws: .049;                                                         /* Logo 圖檔留白 ÷ 圖高 */
-  --logo-h: calc((var(--banner-h) - 1px - 2 * var(--gap)) / (1 - 2 * var(--ws)));
-  --pad: calc(var(--gap) - var(--logo-h) * var(--ws));                /* 補足的實際間距 */
+  --logo-h: 248px;
+  --ws: .049;                                                  /* Logo 圖檔留白 ÷ 圖高 */
+  --top: 100px;                                                /* 頁面頂端 → Logo 的字 */
+  --mid: 100px;                                                /* Logo 的字 → 選單 */
+  --logo-pad: calc(var(--logo-h) * var(--ws));
 }
 .banner__inner {
   max-width: var(--wrap);
   margin: 0 auto;
-  padding: var(--pad) var(--s3) 0;
+  padding: calc(var(--top) - var(--logo-pad)) var(--s3) 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -80,19 +81,56 @@ button { font: inherit; color: inherit; cursor: pointer; }
   height: 100%; width: auto;
   animation: fade .8s var(--ease) both;
 }
-.banner__inner::after {                    /* Logo 下方的線 */
-  content: "";
+
+/* ---------- 選單：圖示 + 英文標籤，項目均分，下方一條線 ---------- */
+.menu {
   align-self: stretch;
-  height: 1px;
-  margin-top: var(--pad);
-  background: currentColor;
+  margin-top: calc(var(--mid) - var(--logo-pad));
+  padding-bottom: 7px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 8px 24px;
+  border-bottom: 1px solid currentColor;
+  font-family: "Gaegu", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  font-weight: 700;
+  font-size: 23px;                                             /* Gaegu 的字面偏小，23px 才跟設計稿的字一樣大 */
+  line-height: 1;
+  letter-spacing: -.053em;
+  -webkit-text-stroke: .45px currentColor;                        /* 設計稿的字比 Gaegu 原本的 Bold 再粗一點 */
+  animation: fade .8s .1s var(--ease) both;
 }
+.menu:empty { padding-bottom: 0; }
+.menu__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+}
+/* 標籤含中文時縮小：Gaegu 只有英文且字面偏小，中文用備用黑體會顯得特別大 */
+.menu__label--cjk { font-size: .8em; letter-spacing: .02em; }
+.menu__icon { width: 28px; height: 28px; flex: none; opacity: .82; }
+@media (pointer: coarse) { .menu__item { min-height: 44px; } }   /* 觸控裝置：確保好點 */
+a.menu__item { transition: opacity .15s; }
+@media (hover: hover) { a.menu__item:hover { opacity: .55; } }
+a.menu__item:focus-visible { outline-offset: 4px; }
 
 .banner--dark { color: #fff; }
 .banner--dark .banner__logo img { filter: invert(1); }
 
+/* 平板：選單項目比較擠，縮小一點 */
+@media (max-width: 1000px) {
+  .menu { font-size: 20px; gap: 4px 12px; }
+  .menu__item { gap: 8px; }
+  .menu__icon { width: 24px; height: 24px; }
+}
+/* 手機：Logo 縮小，選單換行置中 */
 @media (max-width: 640px) {
-  .banner { --banner-h: 239px; --gap: 24px; }
+  :root { --menu-below: 28px; }
+  .banner { --logo-h: 210px; --top: 40px; --mid: 36px; }
+  .menu { flex-wrap: wrap; justify-content: center; gap: 0 22px; font-size: 19px; }
 }
 
 /* ==========================================================
@@ -101,9 +139,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 main {
   max-width: var(--wrap);
   margin: 0 auto;
-  padding: 32px var(--s3) var(--s6);
+  padding: var(--menu-below, 56px) var(--s3) var(--s6);
 }
-@media (max-width: 640px) { main { padding: 24px var(--s2) var(--s5); } }
+@media (max-width: 640px) { main { padding: var(--menu-below) var(--s2) var(--s5); } }
 
 /* ==========================================================
    卡片格狀

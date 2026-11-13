@@ -19,6 +19,7 @@ const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
 const store = require("./storage");
+const icons = require("./icons");
 
 const PORT = Number(process.env.PORT) || 3000;
 const ROOT = __dirname;
@@ -133,6 +134,28 @@ const isDark = hex => {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.35;
 };
 
+/* 首頁選單：沒有設定過（舊資料）就用這組預設 */
+const DEFAULT_MENU = [
+  { label: "Bulletin Board", icon: "board", href: "#works" },
+  { label: "Teacher", icon: "owl", href: "" },
+  { label: "Classroom Activities", icon: "plane", href: "" },
+  { label: "Weekly diary", icon: "book", href: "" },
+  { label: "Instagram", icon: "instagram", href: "" }
+];
+const HREF_RE = /^(#[\w-]*|\/(?!\/)[^\s]*|https?:\/\/[^\s]+|mailto:[^\s]+)$/i;
+function cleanMenu(list) {
+  if (!Array.isArray(list)) return DEFAULT_MENU.map(m => ({ ...m }));
+  return list.slice(0, 8).map(m => {
+    m = m && typeof m === "object" ? m : {};
+    const href = typeof m.href === "string" ? m.href.trim().slice(0, 300) : "";
+    return {
+      label: str(m.label, 40),
+      icon: icons.ICONS[m.icon] ? m.icon : "",
+      href: HREF_RE.test(href) ? href : ""
+    };
+  }).filter(m => m.label);
+}
+
 const str = (v, max) => (typeof v === "string" ? v : "").slice(0, max).trim();
 
 function cleanImage(img) {
@@ -181,6 +204,7 @@ function cleanContent(input) {
       description: str(s.description, 300),
       footer: str(s.footer, 200),
       bannerColor: colorOf(s.bannerColor),
+      menu: cleanMenu(s.menu),
       categories
     },
     about,
@@ -229,6 +253,16 @@ app.use((req, res, next) => {
 const escapeJSON = obj => JSON.stringify(obj).replace(/</g, "\\u003c").replace(/[\u2028\u2029]/g, c => (c === "\u2028" ? "\\u2028" : "\\u2029"));
 const escapeHTML = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
+function renderMenu(menu) {
+  return (menu || []).map(m => {
+    const cjk = /[\u2e80-\u9fff\uf900-\ufaff\uff00-\uffef]/.test(m.label) ? " menu__label--cjk" : "";
+    const inner = `${icons.svg(m.icon)}<span class="menu__label${cjk}">${escapeHTML(m.label)}</span>`;
+    if (!m.href) return `<span class="menu__item">${inner}</span>`;
+    const ext = /^https?:/i.test(m.href) ? ' target="_blank" rel="noopener"' : "";
+    return `<a class="menu__item" href="${escapeHTML(m.href)}"${ext}>${inner}</a>`;
+  }).join("");
+}
+
 app.get(["/", "/index.html"], wrap(async (req, res) => {
   const tpl = fs.readFileSync(VIEW_FILE, "utf8");
   const c = await publicContent();
@@ -240,6 +274,7 @@ app.get(["/", "/index.html"], wrap(async (req, res) => {
     .replace(/{{OG_IMAGE}}/g, escapeHTML(ogImg))
     .replace(/{{BANNER_COLOR}}/g, c.site.bannerColor)
     .replace(/{{BANNER_CLASS}}/g, isDark(c.site.bannerColor) ? "banner--dark" : "")
+    .replace("<!--MENU-->", renderMenu(c.site.menu))
     .replace("<!--CONTENT-->", `<script>window.WS_CONTENT=${escapeJSON(c)};</script>`);
   // 線上讓 CDN 快取 10 秒，訪客多時不會每次都去讀儲存空間
   res.setHeader("Cache-Control", ONLINE ? "public, max-age=0, s-maxage=10, stale-while-revalidate=30" : "no-cache");

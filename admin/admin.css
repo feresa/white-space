@@ -292,3 +292,11 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 700; letter-spacing: .
 /* 設計師用：圖片區塊一律方角 */
 .crop, .focal, .row__thumb, .media, .media img, .img-item, .picker { border-radius: 0; }
 .focal__dot { border-radius: 50%; }
+
+/* 選單編輯 */
+.menu-list { display: grid; gap: 12px; }
+.menu-row { display: grid; grid-template-columns: 1.1fr 1fr 1.6fr auto; gap: 0 12px; align-items: end; padding: 12px; background: var(--paper); border: 1px solid var(--line); }
+.menu-row .field { margin-bottom: 0; }
+.menu-row__btns { display: flex; gap: 6px; padding-bottom: 2px; }
+.hint { white-space: pre-line; }
+@media (max-width: 760px) { .menu-row { grid-template-columns: 1fr 1fr; } .menu-row__href { grid-column: 1 / -1; } .menu-row__btns { grid-column: 1 / -1; justify-content: flex-end; } }

@@ -398,6 +398,7 @@
           h("input", { type: "color", value: s.bannerColor || "#ffffff", style: "width:120px;padding:4px",
             oninput: e => { s.bannerColor = e.target.value; changed(); } }),
           h("small", {}, "首頁最上方整條色塊的顏色。選深色時 Logo 會自動變白。"))),
+      menuPanel(),
       h("div", { class: "panel" },
         h("h2", {}, "分類"),
         h("p", { class: "hint" }, "一行一個。首頁只會顯示有卡片的分類。改名字的話，卡片也要重新選一次分類。"),
@@ -406,6 +407,41 @@
             oninput: e => { s.categories = e.target.value.split("\n").map(x => x.trim()).filter(Boolean); changed(); } },
             (s.categories || []).join("\n"))))
     );
+  }
+
+  /* ---------- 首頁選單 ---------- */
+  const MENU_ICONS = [
+    ["", "（沒有圖示）"], ["board", "公佈欄"], ["owl", "貓頭鷹（老師）"], ["plane", "紙飛機"], ["book", "筆記本"],
+    ["instagram", "Instagram"], ["mail", "信封"], ["home", "房子"], ["heart", "愛心"], ["star", "星星"], ["link", "連結"]
+  ];
+  function menuPanel() {
+    const s = doc.site;
+    if (!Array.isArray(s.menu)) s.menu = [];
+    const list = h("div", { class: "menu-list" });
+    const redraw = () => { const y = scrollY; renderSettings(); scrollTo(0, y); };
+    s.menu.forEach((m, i) => {
+      const move = d => { const j = i + d; [s.menu[i], s.menu[j]] = [s.menu[j], s.menu[i]]; changed(); redraw(); };
+      list.append(h("div", { class: "menu-row" },
+        h("label", { class: "field" }, h("span", {}, "名稱"),
+          h("input", { type: "text", value: m.label || "", maxlength: "40", oninput: e => { m.label = e.target.value; changed(); } })),
+        h("label", { class: "field" }, h("span", {}, "圖示"),
+          h("select", { onchange: e => { m.icon = e.target.value; changed(); } },
+            ...MENU_ICONS.map(([v, t]) => h("option", { value: v, selected: v === (m.icon || "") }, t)))),
+        h("label", { class: "field menu-row__href" }, h("span", {}, "連結"),
+          h("input", { type: "text", value: m.href || "", maxlength: "300", placeholder: "例如 #works、/about 或 https://instagram.com/…",
+            oninput: e => { m.href = e.target.value; changed(); } })),
+        h("div", { class: "menu-row__btns" },
+          h("button", { class: "icon-btn", type: "button", "aria-label": "往前", disabled: i === 0, onclick: () => move(-1) }, icon(I.up)),
+          h("button", { class: "icon-btn", type: "button", "aria-label": "往後", disabled: i === s.menu.length - 1, onclick: () => move(1) }, icon(I.down)),
+          h("button", { class: "icon-btn", type: "button", "aria-label": "刪除", onclick: () => { s.menu.splice(i, 1); changed(); redraw(); } }, icon(I.trash)))));
+    });
+    if (!s.menu.length) list.append(h("p", { class: "empty" }, "沒有選單項目（首頁只會顯示 Logo 下方的線）"));
+    return h("div", { class: "panel" },
+      h("h2", {}, "首頁選單"),
+      h("p", { class: "hint" }, "Logo 下方那一排，最多 8 個，由上到下就是由左到右。連結留空的話，那一項會顯示但點不動。\n#works 是捲到作品區；也可以填 https:// 開頭的網址（會在新分頁開啟）。"),
+      list,
+      s.menu.length < 8 && h("div", { class: "add-row" },
+        h("button", { class: "btn", type: "button", onclick: () => { s.menu.push({ label: "新項目", icon: "", href: "" }); changed(); redraw(); } }, "＋ 新增選單項目")));
   }
 
   /* ---------- 圖庫 ---------- */
