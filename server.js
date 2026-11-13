@@ -19,7 +19,6 @@ const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
 const store = require("./storage");
-const icons = require("./icons");
 
 const PORT = Number(process.env.PORT) || 3000;
 const ROOT = __dirname;
@@ -134,23 +133,28 @@ const isDark = hex => {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.35;
 };
 
-/* 首頁選單：沒有設定過（舊資料）就用這組預設 */
+/* 首頁選單：每一項是一張圖（設計稿裡切出來的，向量 SVG）+ 名稱（給看不到圖的人）+ 連結。沒有設定過就用這組預設 */
 const DEFAULT_MENU = [
-  { label: "Bulletin Board", icon: "board", href: "#works" },
-  { label: "Teacher", icon: "owl", href: "" },
-  { label: "Classroom Activities", icon: "plane", href: "" },
-  { label: "Weekly diary", icon: "book", href: "" },
-  { label: "Instagram", icon: "instagram", href: "" }
+  { label: "Bulletin Board", image: "/assets/menu/board.svg", href: "#works" },
+  { label: "Teacher", image: "/assets/menu/teacher.svg", href: "" },
+  { label: "Classroom Activities", image: "/assets/menu/activities.svg", href: "" },
+  { label: "Weekly diary", image: "/assets/menu/diary.svg", href: "" },
+  { label: "Instagram", image: "/assets/menu/instagram.svg", href: "" }
 ];
+const OLD_ICON_IMAGE = { board: "board", owl: "teacher", plane: "activities", book: "diary", instagram: "instagram" };  // 舊版的圖示欄位 → 對應圖
+// 內建的選單圖（SVG，只放在 assets/menu/）或上傳／內建的點陣圖；上傳區不收 SVG
+const MENU_IMG_RE = /^\/(assets\/menu\/[A-Za-z0-9_-]+\.svg|(assets|uploads)\/[A-Za-z0-9._-]+\.(jpe?g|png|webp|gif|avif))$/i;
 const HREF_RE = /^(#[\w-]*|\/(?!\/)[^\s]*|https?:\/\/[^\s]+|mailto:[^\s]+)$/i;
 function cleanMenu(list) {
   if (!Array.isArray(list)) return DEFAULT_MENU.map(m => ({ ...m }));
   return list.slice(0, 8).map(m => {
     m = m && typeof m === "object" ? m : {};
     const href = typeof m.href === "string" ? m.href.trim().slice(0, 300) : "";
+    let image = typeof m.image === "string" ? m.image : "";
+    if (!image && OLD_ICON_IMAGE[m.icon]) image = `/assets/menu/${OLD_ICON_IMAGE[m.icon]}.svg`;
     return {
       label: str(m.label, 40),
-      icon: icons.ICONS[m.icon] ? m.icon : "",
+      image: MENU_IMG_RE.test(image) ? image : "",
       href: HREF_RE.test(href) ? href : ""
     };
   }).filter(m => m.label);
@@ -255,8 +259,10 @@ const escapeHTML = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<":
 
 function renderMenu(menu) {
   return (menu || []).map(m => {
-    const cjk = /[\u2e80-\u9fff\uf900-\ufaff\uff00-\uffef]/.test(m.label) ? " menu__label--cjk" : "";
-    const inner = `${icons.svg(m.icon)}<span class="menu__label${cjk}">${escapeHTML(m.label)}</span>`;
+    // 有圖就放圖（名稱當替代文字）；沒圖就顯示文字
+    const inner = m.image
+      ? `<img class="menu__img" src="${escapeHTML(m.image)}" alt="${escapeHTML(m.label)}" decoding="async">`
+      : `<span class="menu__text">${escapeHTML(m.label)}</span>`;
     if (!m.href) return `<span class="menu__item">${inner}</span>`;
     const ext = /^https?:/i.test(m.href) ? ' target="_blank" rel="noopener"' : "";
     return `<a class="menu__item" href="${escapeHTML(m.href)}"${ext}>${inner}</a>`;

@@ -82,55 +82,48 @@ button { font: inherit; color: inherit; cursor: pointer; }
   animation: fade .8s var(--ease) both;
 }
 
-/* ---------- 選單：圖示 + 英文標籤，項目均分，下方一條線 ---------- */
+/* ---------- 選單：每一項是一張圖（設計稿切出來的向量圖，36px 高），項目均分，下方一條線 ----------
+   圖的上緣比圖示高 4px、下緣比圖示低 4px，所以 margin / padding 要各扣掉對應的量 */
 .menu {
   align-self: stretch;
-  margin-top: calc(var(--mid) - var(--logo-pad));
-  padding-bottom: 7px;
+  margin-top: calc(var(--mid) - var(--logo-pad) - 4px);
+  padding: 0 37px 3px 52px;                                     /* 設計稿：左留約 55px、右留約 40px（扣掉圖本身的 3px 內距），項目在中間均分 */
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
   gap: 8px 24px;
   border-bottom: 1px solid currentColor;
-  font-family: "Gaegu", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
-  font-weight: 700;
-  font-size: 23px;                                             /* Gaegu 的字面偏小，23px 才跟設計稿的字一樣大 */
-  line-height: 1;
-  letter-spacing: -.053em;
-  -webkit-text-stroke: .45px currentColor;                        /* 設計稿的字比 Gaegu 原本的 Bold 再粗一點 */
   animation: fade .8s .1s var(--ease) both;
 }
 .menu:empty { padding-bottom: 0; }
 .menu__item {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
   color: inherit;
   text-decoration: none;
   white-space: nowrap;
 }
-/* 標籤含中文時縮小：Gaegu 只有英文且字面偏小，中文用備用黑體會顯得特別大 */
-.menu__label--cjk { font-size: .8em; letter-spacing: .02em; }
-.menu__icon { width: 28px; height: 28px; flex: none; opacity: .82; }
-@media (pointer: coarse) { .menu__item { min-height: 44px; } }   /* 觸控裝置：確保好點 */
+.menu__img { display: block; height: 36px; width: auto; }
+.menu__text { font-size: 16px; font-weight: 700; letter-spacing: .06em; }          /* 沒有圖的項目顯示文字 */
 a.menu__item { transition: opacity .15s; }
 @media (hover: hover) { a.menu__item:hover { opacity: .55; } }
 a.menu__item:focus-visible { outline-offset: 4px; }
+@media (pointer: coarse) { .menu__item { min-height: 44px; } }   /* 觸控裝置：確保好點 */
 
 .banner--dark { color: #fff; }
-.banner--dark .banner__logo img { filter: invert(1); }
+.banner--dark .banner__logo img, .banner--dark .menu__img { filter: invert(1); }
 
-/* 平板：選單項目比較擠，縮小一點 */
+/* 平板：選單項目比較擠，圖縮小一點 */
 @media (max-width: 1000px) {
-  .menu { font-size: 20px; gap: 4px 12px; }
-  .menu__item { gap: 8px; }
-  .menu__icon { width: 24px; height: 24px; }
+  .menu { gap: 4px 12px; padding-inline: 12px; }
+  .menu__img { height: 30px; }
 }
 /* 手機：Logo 縮小，選單換行置中 */
 @media (max-width: 640px) {
   :root { --menu-below: 28px; }
   .banner { --logo-h: 210px; --top: 40px; --mid: 36px; }
-  .menu { flex-wrap: wrap; justify-content: center; gap: 0 22px; font-size: 19px; }
+  .menu { flex-wrap: wrap; justify-content: center; gap: 0 22px; padding-inline: 0; }
+  .menu__img { height: 28px; }
 }
 
 /* ==========================================================

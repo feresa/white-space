@@ -410,9 +410,12 @@
   }
 
   /* ---------- 首頁選單 ---------- */
-  const MENU_ICONS = [
-    ["", "（沒有圖示）"], ["board", "公佈欄"], ["owl", "貓頭鷹（老師）"], ["plane", "紙飛機"], ["book", "筆記本"],
-    ["instagram", "Instagram"], ["mail", "信封"], ["home", "房子"], ["heart", "愛心"], ["star", "星星"], ["link", "連結"]
+  const DEFAULT_MENU = [
+    { label: "Bulletin Board", image: "/assets/menu/board.svg", href: "#works" },
+    { label: "Teacher", image: "/assets/menu/teacher.svg", href: "" },
+    { label: "Classroom Activities", image: "/assets/menu/activities.svg", href: "" },
+    { label: "Weekly diary", image: "/assets/menu/diary.svg", href: "" },
+    { label: "Instagram", image: "/assets/menu/instagram.svg", href: "" }
   ];
   function menuPanel() {
     const s = doc.site;
@@ -421,12 +424,17 @@
     const redraw = () => { const y = scrollY; renderSettings(); scrollTo(0, y); };
     s.menu.forEach((m, i) => {
       const move = d => { const j = i + d; [s.menu[i], s.menu[j]] = [s.menu[j], s.menu[i]]; changed(); redraw(); };
+      const upload = h("input", { type: "file", accept: "image/*", hidden: true,
+        onchange: async e => { try { const [img] = await uploadFiles(e.target.files); if (img) { m.image = img.src; changed(); redraw(); } } catch (err) { toast(err.message, true); } } });
       list.append(h("div", { class: "menu-row" },
-        h("label", { class: "field" }, h("span", {}, "名稱"),
+        h("div", { class: "field menu-row__img" }, h("span", {}, "圖片"),
+          h("div", { class: "menu-thumb" }, m.image ? h("img", { src: m.image, alt: "" }) : h("em", {}, "沒有圖：首頁會顯示文字")),
+          h("div", { class: "menu-row__imgbtns" },
+            h("label", { class: "btn btn--sm" }, "上傳", upload),
+            h("button", { class: "btn btn--sm", type: "button", onclick: async () => { const img = await pickImage(); if (img) { m.image = img.src; changed(); redraw(); } } }, "從圖庫選"),
+            m.image && h("button", { class: "btn btn--sm btn--danger", type: "button", onclick: () => { m.image = ""; changed(); redraw(); } }, "清除"))),
+        h("label", { class: "field" }, h("span", {}, "名稱（給看不到圖的人 / 沒圖時顯示）"),
           h("input", { type: "text", value: m.label || "", maxlength: "40", oninput: e => { m.label = e.target.value; changed(); } })),
-        h("label", { class: "field" }, h("span", {}, "圖示"),
-          h("select", { onchange: e => { m.icon = e.target.value; changed(); } },
-            ...MENU_ICONS.map(([v, t]) => h("option", { value: v, selected: v === (m.icon || "") }, t)))),
         h("label", { class: "field menu-row__href" }, h("span", {}, "連結"),
           h("input", { type: "text", value: m.href || "", maxlength: "300", placeholder: "例如 #works、/about 或 https://instagram.com/…",
             oninput: e => { m.href = e.target.value; changed(); } })),
@@ -438,10 +446,11 @@
     if (!s.menu.length) list.append(h("p", { class: "empty" }, "沒有選單項目（首頁只會顯示 Logo 下方的線）"));
     return h("div", { class: "panel" },
       h("h2", {}, "首頁選單"),
-      h("p", { class: "hint" }, "Logo 下方那一排，最多 8 個，由上到下就是由左到右。連結留空的話，那一項會顯示但點不動。\n#works 是捲到作品區；也可以填 https:// 開頭的網址（會在新分頁開啟）。"),
+      h("p", { class: "hint" }, "Logo 下方那一排，最多 8 個，由上到下就是由左到右。每一項放一張圖（高度會縮放成 36px，建議寬度比高度長、背景透明的 PNG / WebP）。連結留空的話，那一項會顯示但點不動。\n#works 是捲到作品區；也可以填 https:// 開頭的網址（會在新分頁開啟）。"),
       list,
-      s.menu.length < 8 && h("div", { class: "add-row" },
-        h("button", { class: "btn", type: "button", onclick: () => { s.menu.push({ label: "新項目", icon: "", href: "" }); changed(); redraw(); } }, "＋ 新增選單項目")));
+      h("div", { class: "add-row" },
+        s.menu.length < 8 && h("button", { class: "btn", type: "button", onclick: () => { s.menu.push({ label: "新項目", image: "", href: "" }); changed(); redraw(); } }, "＋ 新增選單項目"),
+        h("button", { class: "btn btn--ghost", type: "button", onclick: () => { if (!confirm("要把選單還原成預設的五個項目嗎？")) return; s.menu = DEFAULT_MENU.map(m => ({ ...m })); changed(); redraw(); } }, "還原預設選單")));
   }
 
   /* ---------- 圖庫 ---------- */

@@ -25,7 +25,7 @@ ADMIN_PASSWORD=你的密碼 npm start
 | --- | --- |
 | 卡片 | 新增、編輯、刪除、調整順序、草稿／公開。每張卡片可放多張大圖、一張內文小圖 |
 | 關於 | 首頁右上角 ⓘ 彈出的介紹 |
-| 網站設定 | 網站名稱、Banner 底色、描述（社群分享預覽）、頁尾、**首頁選單**（名稱／圖示／連結，最多 8 個）、分類 |
+| 網站設定 | 網站名稱、Banner 底色、描述（社群分享預覽）、頁尾、**首頁選單**（每項一張圖＋名稱＋連結，最多 8 個）、分類 |
 | 圖庫 | 看所有上傳過的圖，刪除沒用到的 |
 | 帳號 | 改密碼、下載備份 |
 
@@ -75,10 +75,9 @@ ADMIN_PASSWORD=你的密碼 npm start
 ```
 server.js        伺服器與 API
 storage.js       儲存層（本機檔案 / Vercel Blob）
-icons.js         首頁選單的線條圖示
 api/index.js     Vercel 進入點
 views/index.html 首頁範本
-public/          前台（style.css / script.js / assets）
+public/          前台（style.css / script.js / assets，選單圖在 assets/menu/）
 admin/           後台
 seed/content.json  第一次啟動時的初始內容
 .claude/skills/  ui-ux-pro-max 設計 skill
