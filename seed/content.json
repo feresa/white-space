@@ -1,0 +1,306 @@
+{
+  "site": {
+    "name": "留白教室 White Space",
+    "tagline": "留一點白，找到自己的空間",
+    "description": "留白教室 White Space｜留一點白，找到自己的空間。",
+    "footer": "© 留白教室 White Space",
+    "categories": [
+      "課程",
+      "手記"
+    ],
+    "bannerColor": "#ffffff"
+  },
+  "about": {
+    "tag": "關於",
+    "title": "留白教室 White Space",
+    "images": [
+      {
+        "src": "/assets/illust-cups.webp",
+        "pos": "50% 50%",
+        "alt": "三個杯子，從滿到空",
+        "zoom": 1.3
+      },
+      {
+        "src": "/assets/illust-pink.webp",
+        "pos": "42% 45%",
+        "alt": "小青蛙握著花飄在空中",
+        "zoom": 1.3
+      },
+      {
+        "src": "/assets/illust-yellow.webp",
+        "pos": "26% 37%",
+        "alt": "小青蛙抓著葉子飛",
+        "zoom": 1.3
+      }
+    ],
+    "figure": {
+      "src": "/assets/illust-fern.webp",
+      "pos": "58% 45%",
+      "alt": "揮手的小青蛙",
+      "zoom": 2.2
+    },
+    "text": "畫畫的時候，留白讓畫面可以呼吸；生活也是。\n\n留白教室是一個慢下來的地方。我們一起畫畫、呼吸、說故事，在忙碌的日子裡，替自己留一塊空白。\n\n這裡沒有標準答案，也不用急著完成什麼。帶著好奇心來就好。"
+  },
+  "items": [
+    {
+      "id": "breath-start",
+      "tag": "課程",
+      "title": "從一口呼吸開始",
+      "summary": "給忙碌大人的呼吸練習",
+      "images": [
+        {
+          "src": "/assets/illust-pink.webp",
+          "pos": "42% 45%",
+          "alt": "粉紅色花朵間飄浮的小青蛙",
+          "zoom": 1.3
+        },
+        {
+          "src": "/assets/illust-fern.webp",
+          "pos": "58% 42%",
+          "alt": "在綠色葉子間跳舞的小青蛙",
+          "zoom": 1.3
+        },
+        {
+          "src": "/assets/illust-pink.webp",
+          "pos": "80% 30%",
+          "alt": "粉紅色的花朵",
+          "zoom": 1.3
+        }
+      ],
+      "figure": {
+        "src": "/assets/illust-pink.webp",
+        "pos": "42% 50%",
+        "alt": "小青蛙抬頭看著花",
+        "zoom": 2.2
+      },
+      "text": "吸氣的時候，感覺空氣走進身體；吐氣的時候，讓肩膀跟著放下來。\n\n這堂課帶大家用最簡單的方式，把注意力從腦袋帶回身體。不需要任何基礎，只要願意給自己十分鐘。\n\n課程內容：基礎腹式呼吸、數息練習、睡前放鬆呼吸。",
+      "published": true
+    },
+    {
+      "id": "leaf-travel",
+      "tag": "手記",
+      "title": "跟著葉子去旅行",
+      "summary": "風往哪裡吹，就去哪裡看看",
+      "images": [
+        {
+          "src": "/assets/illust-yellow.webp",
+          "pos": "26% 37%",
+          "alt": "小青蛙抓著一片橘色葉子在黃色的風裡飛",
+          "zoom": 1.3
+        },
+        {
+          "src": "/assets/illust-yellow.webp",
+          "pos": "70% 60%",
+          "alt": "黃色背景上的雨滴與風",
+          "zoom": 1.3
+        },
+        {
+          "src": "/assets/illust-fern.webp",
+          "pos": "30% 70%",
+          "alt": "被風吹起的綠色葉子",
+          "zoom": 1.3
+        }
+      ],
+      "figure": {
+        "src": "/assets/illust-yellow.webp",
+        "pos": "26% 37%",
+        "alt": "抓著葉子的小青蛙",
+        "zoom": 2.2
+      },
+      "text": "有一天風很大，小青蛙抓住一片葉子，就這樣被吹走了。\n\n牠沒有掙扎，只是看著底下的世界一點一點變小。原來放手，也可以是一種前進。\n\n這是留白教室的第一篇小故事，寫給每個常常想抓緊什麼的自己。",
+      "published": true
+    },
+    {
+      "id": "empty-cup",
+      "tag": "手記",
+      "title": "倒空的杯子",
+      "summary": "杯子空了，才裝得下新的東西",
+      "images": [
+        {
+          "src": "/assets/illust-cups.webp",
+          "pos": "50% 50%",
+          "alt": "三個杯子：裝滿水、剩一半、完全倒空，小青蛙在杯子裡",
+          "zoom": 1.3
+        },
+        {
+          "src": "/assets/illust-cups.webp",
+          "pos": "15% 50%",
+          "alt": "裝滿水的杯子，小青蛙和小魚在裡面游泳",
+          "zoom": 1.3
+        },
+        {
+          "src": "/assets/illust-cups.webp",
+          "pos": "85% 50%",
+          "alt": "倒空的杯子，小青蛙站在杯底",
+          "zoom": 1.3
+        }
+      ],
+      "figure": {
+        "src": "/assets/illust-cups.webp",
+        "pos": "79% 62%",
+        "alt": "站在空杯子底部的小青蛙",
+        "zoom": 2.2
+      },
+      "text": "第一個杯子裝得滿滿的，水一直溢出來，連小青蛙都快被淹沒了。\n\n慢慢倒掉一些，水面安靜下來，牠終於可以坐在葉子上休息。\n\n最後杯子空了。小青蛙站在杯底，抬頭看，發現原來這裡這麼寬。\n\n留白，就是替自己把杯子倒空一點。",
+      "published": true
+    },
+    {
+      "id": "morning-calm",
+      "tag": "課程",
+      "title": "早晨十分鐘靜心",
+      "summary": "一天開始前，先跟自己打招呼",
+      "images": [
+        {
+          "src": "/assets/illust-fern.webp",
+          "pos": "58% 42%",
+          "alt": "在綠色葉子間開心揮手的小青蛙",
+          "zoom": 1.3
+        },
+        {
+          "src": "/assets/illust-fern.webp",
+          "pos": "20% 75%",
+          "alt": "綠色的蕨葉",
+          "zoom": 1.3
+        },
+        {
+          "src": "/assets/illust-fern.webp",
+          "pos": "85% 30%",
+          "alt": "淡綠色的風",
+          "zoom": 1.3
+        }
+      ],
+      "figure": {
+        "src": "/assets/illust-fern.webp",
+        "pos": "58% 45%",
+        "alt": "揮手的小青蛙",
+        "zoom": 2.2
+      },
+      "text": "起床後先不要滑手機，坐下來，閉上眼睛十分鐘。\n\n我們會從身體掃描開始，再慢慢安靜下來。持續一段時間，你會發現一天的節奏不太一樣了。\n\n適合：想建立靜心習慣、常常一早就覺得很趕的人。",
+      "published": true
+    },
+    {
+      "id": "slow-flower",
+      "tag": "手記",
+      "title": "慢慢長大的花",
+      "summary": "不用跟別人比開花的時間",
+      "images": [
+        {
+          "src": "/assets/illust-pink.webp",
+          "pos": "75% 40%",
+          "alt": "粉紅色的花朵",
+          "zoom": 1.3
+        },
+        {
+          "src": "/assets/illust-pink.webp",
+          "pos": "42% 45%",
+          "alt": "握著花的小青蛙",
+          "zoom": 1.3
+        }
+      ],
+      "figure": {
+        "src": "/assets/illust-pink.webp",
+        "pos": "85% 30%",
+        "alt": "粉紅色的花",
+        "zoom": 2.2
+      },
+      "text": "有些花春天開，有些花要等到秋天。\n\n每一朵花都有自己的時間，人也是。今天沒開，不代表不會開。\n\n寫給正在等待的你。",
+      "published": true
+    },
+    {
+      "id": "blank-painting",
+      "tag": "課程",
+      "title": "留白繪畫課",
+      "summary": "畫得少一點，看得多一點",
+      "images": [
+        {
+          "src": "/assets/illust-ribbon.webp",
+          "pos": "20% 42%",
+          "alt": "彩色粉彩筆觸間的小青蛙",
+          "zoom": 1.3
+        },
+        {
+          "src": "/assets/illust-ribbon.webp",
+          "pos": "60% 40%",
+          "alt": "粉紅、黃、藍色交錯的彩帶線條",
+          "zoom": 1.3
+        },
+        {
+          "src": "/assets/illust-ribbon.webp",
+          "pos": "85% 60%",
+          "alt": "橘色的彩帶",
+          "zoom": 1.3
+        }
+      ],
+      "figure": {
+        "src": "/assets/illust-ribbon.webp",
+        "pos": "20% 42%",
+        "alt": "在彩帶間的小青蛙",
+        "zoom": 2.2
+      },
+      "text": "用粉彩跟水彩，練習「不畫滿」。\n\n我們會一起觀察：哪裡該停筆？空白怎麼讓畫面變得更舒服？畫完一張，你會更懂得生活裡的留白。\n\n材料教室提供，帶著輕鬆的心情來就好。",
+      "published": true
+    },
+    {
+      "id": "rain-sound",
+      "tag": "手記",
+      "title": "下雨天的聲音",
+      "summary": "把窗外的雨聲當作背景音樂",
+      "images": [
+        {
+          "src": "/assets/illust-cups.webp",
+          "pos": "50% 50%",
+          "alt": "藍色背景上的雨滴和杯子",
+          "zoom": 1.3
+        },
+        {
+          "src": "/assets/illust-yellow.webp",
+          "pos": "80% 70%",
+          "alt": "黃色背景上的雨滴",
+          "zoom": 1.3
+        }
+      ],
+      "figure": {
+        "src": "/assets/illust-cups.webp",
+        "pos": "50% 55%",
+        "alt": "坐在葉子上的小青蛙",
+        "zoom": 2.2
+      },
+      "text": "下雨天，不能出門，就坐在窗邊聽雨。\n\n一開始只聽到嘩啦啦，聽久了，會分得出打在屋簷、打在葉子、打在地上的聲音。\n\n安靜下來，世界其實很熱鬧。",
+      "published": true
+    },
+    {
+      "id": "family-breath",
+      "tag": "課程",
+      "title": "親子呼吸遊戲",
+      "summary": "跟孩子一起玩，一起放鬆",
+      "images": [
+        {
+          "src": "/assets/illust-ribbon.webp",
+          "pos": "55% 45%",
+          "alt": "彩色的彩帶與圓圈",
+          "zoom": 1.3
+        },
+        {
+          "src": "/assets/illust-cups.webp",
+          "pos": "22% 50%",
+          "alt": "在水裡游泳的小青蛙",
+          "zoom": 1.3
+        },
+        {
+          "src": "/assets/illust-fern.webp",
+          "pos": "58% 42%",
+          "alt": "開心的小青蛙",
+          "zoom": 1.3
+        }
+      ],
+      "figure": {
+        "src": "/assets/illust-ribbon.webp",
+        "pos": "20% 42%",
+        "alt": "小青蛙",
+        "zoom": 2.2
+      },
+      "text": "吹泡泡、聞花香、當一隻慢慢呼吸的青蛙。\n\n用遊戲帶孩子認識自己的呼吸，情緒來的時候，也多一個可以用的小工具。\n\n適合 4–10 歲的孩子與家長一同參加。",
+      "published": true
+    }
+  ]
+}

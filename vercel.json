@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "{views,admin,seed,public}/**",
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
+}

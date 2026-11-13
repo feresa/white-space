@@ -1,0 +1,380 @@
+/* ==========================================================
+   留白教室 White Space
+   方向：乾淨利落、白底、方角、作品為主角（Behance 式格狀）
+   ========================================================== */
+
+:root {
+  --banner: #ffffff;          /* 由後台「網站設定」控制 */
+  --bg: #fff;
+  --ink: #111;
+  --ink-soft: #5f5f5f;        /* 對白底對比 > 6:1 */
+  --line: #e4e4e4;
+  --placeholder: #f1f1ef;
+  --focus: #5b3bd6;
+  --scrim: rgba(0, 0, 0, .55);
+
+  --font: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+
+  --s1: 8px; --s2: 16px; --s3: 24px; --s4: 32px; --s5: 48px; --s6: 72px;
+  --wrap: 1200px;
+  --menu-below: 56px;                                          /* 選單底線 → 卡片 */
+  --ease: cubic-bezier(.22, .61, .36, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; border-radius: 0; }
+
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.7;
+  letter-spacing: .01em;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img { display: block; max-width: 100%; }
+button { font: inherit; color: inherit; cursor: pointer; }
+
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+
+.skip-link {
+  position: absolute; left: var(--s2); top: -60px;
+  background: var(--ink); color: #fff; padding: 8px 14px;
+  z-index: 100; text-decoration: none; transition: top .2s;
+}
+.skip-link:focus { top: var(--s2); }
+
+/* ==========================================================
+   Banner：整條純色、窄版
+   ========================================================== */
+.banner {
+  position: relative;
+  background: var(--banner);
+  color: var(--ink);
+}
+/* Banner 版面（比例取自設計稿，1920 寬的畫面）
+   logo 字高約 225px；上緣、logo→選單 各約 100px；選單文字下 7px 接底線；線→卡片約 56px（--menu-below）
+   Logo 圖檔本身上下各有 4.9% 的留白（40 / 816），算空白時要扣掉，視覺距離才會準 */
+.banner {
+  --logo-h: 248px;
+  --ws: .049;                                                  /* Logo 圖檔留白 ÷ 圖高 */
+  --top: 100px;                                                /* 頁面頂端 → Logo 的字 */
+  --mid: 100px;                                                /* Logo 的字 → 選單 */
+  --logo-pad: calc(var(--logo-h) * var(--ws));
+}
+.banner__inner {
+  max-width: var(--wrap);
+  margin: 0 auto;
+  padding: calc(var(--top) - var(--logo-pad)) var(--s3) 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.banner__logo { margin: 0; height: var(--logo-h); }
+.banner__logo img {
+  height: 100%; width: auto;
+  animation: fade .8s var(--ease) both;
+}
+
+/* ---------- 選單：圖示（設計稿的線條圖，36px 高）+ 文字（Nunito 800），項目均分，下方一條線 ----------
+   圖示上緣比圖形高 4px、下緣低 4px，所以 margin / padding 要各扣掉對應的量 */
+.menu {
+  align-self: stretch;
+  margin-top: calc(var(--mid) - var(--logo-pad) - 4px);
+  padding: 0 37px 3px 52px;                                     /* 設計稿：左留約 55px、右留約 40px（扣掉圖本身的 3px 內距），項目在中間均分 */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px 24px;
+  border-bottom: 1px solid currentColor;
+  font-family: "Nunito", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  font-weight: 800;
+  font-size: 15.5px;                                            /* 字高對設計稿：大寫字高約 11px */
+  letter-spacing: .054em;                                       /* ≈ 0.84px */
+  -webkit-text-stroke: .3px currentColor;                         /* 設計稿的字比 Nunito 800 再稍微粗一點 */
+  line-height: 1;
+  animation: fade .8s .1s var(--ease) both;
+}
+.menu:empty { padding-bottom: 0; }
+.menu__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.menu__img { display: block; height: 36px; width: auto; flex: none; }
+.menu__text { position: relative; top: 3px; }                  /* 設計稿的文字比圖示中心低約 3px */
+a.menu__item { transition: opacity .15s; }
+@media (hover: hover) { a.menu__item:hover { opacity: .55; } }
+a.menu__item:focus-visible { outline-offset: 4px; }
+@media (pointer: coarse) { .menu__item { min-height: 44px; } }   /* 觸控裝置：確保好點 */
+
+.banner--dark { color: #fff; }
+.banner--dark .banner__logo img, .banner--dark .menu__img { filter: invert(1); }
+
+/* 平板：選單項目比較擠，縮小一點 */
+@media (max-width: 1000px) {
+  .menu { gap: 4px 12px; padding-inline: 12px; font-size: 14px; }
+  .menu__item { gap: 8px; }
+  .menu__img { height: 30px; }
+  .menu__text { top: 2px; }
+}
+/* 手機：照手機設計稿的比例（以螢幕寬度 vw 換算），Logo 小一點、上下留白多一點，選單換行置中 */
+@media (max-width: 640px) {
+  :root { --menu-below: 7vw; }                                  /* 底線 → 卡片 */
+  .banner {
+    --logo-h: 40.8vw;                                           /* Logo 字高約 37vw */
+    --top: 19vw;                                                /* 頁面頂端 → Logo 的字 */
+    --mid: 13.2vw;                                              /* Logo 的字 → 選單 */
+    --img-pad: 2.6px;                                           /* 圖示圖檔上下的空白（23.7px 高的 4/36） */
+  }
+  .menu {
+    display: grid;                                              /* 手機稿是兩欄：左欄靠右、右欄靠左，最後一個（單數時）置中 */
+    grid-template-columns: auto auto;
+    justify-content: center;
+    gap: calc(10.4vw - 23.7px) 6vw;                             /* 行距約 10.4vw（圖示上緣到上緣）、欄距 6vw */
+    margin-top: calc(var(--mid) - var(--logo-pad) - var(--img-pad));
+    padding: 0 0 calc(6.2vw - var(--img-pad));                  /* 最後一行 → 底線 約 6.2vw */
+    font-size: 10.5px;                                          /* 手機稿的字比較小，字距比較寬 */
+    letter-spacing: .075em;
+  }
+  .menu__item { gap: 8px; min-height: 0; padding: 8px 0; margin: -8px 0; }   /* 觸控範圍加大但不影響排版 */
+  .menu__item:nth-child(odd) { justify-self: end; }
+  .menu__item:nth-child(even) { justify-self: start; }
+  .menu__item:last-child:nth-child(odd) { grid-column: 1 / -1; justify-self: center; }
+  .menu__img { height: 23.7px; }                                /* 圖示本體約 18px 高 */
+  .menu__text { top: 1px; }
+}
+
+/* ==========================================================
+   主內容
+   ========================================================== */
+main {
+  max-width: var(--wrap);
+  margin: 0 auto;
+  padding: var(--menu-below, 56px) var(--s3) var(--s6);
+}
+@media (max-width: 640px) { main { padding: var(--menu-below) var(--s3) var(--s5); } }   /* 手機：卡片兩側跟底線對齊（24px） */
+
+/* ==========================================================
+   卡片格狀
+   ========================================================== */
+.grid {
+  list-style: none; margin: 0; padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s4) var(--s3);
+}
+@media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); gap: var(--s3) var(--s2); } }
+@media (max-width: 640px) {                                   /* 手機：一排一張，圖片照原圖比例完整顯示（不裁切、不放大） */
+  .grid { grid-template-columns: 1fr; gap: var(--s4); }
+  .grid .card__media { aspect-ratio: auto; }
+  .grid .card__media img { height: auto; transform: none !important; }
+}
+
+.grid > li { animation: rise .45s var(--ease) both; }
+
+.card {
+  display: block; width: 100%;
+  padding: 0; border: 0; background: none;
+  text-align: left;
+}
+
+.card__media {
+  display: block;
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--placeholder);
+}
+.card__media img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transform: scale(var(--z, 1));
+  transition: transform .5s var(--ease);
+}
+.card__media::after {                       /* 滑過時的細邊框 */
+  content: ""; position: absolute; inset: 0;
+  box-shadow: inset 0 0 0 0 var(--ink);
+  transition: box-shadow .2s;
+  pointer-events: none;
+}
+
+.card__title {
+  display: block;
+  margin-top: 12px;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.45;
+}
+.card__summary {
+  display: block;
+  margin-top: 2px;
+  font-size: 14px;
+  color: var(--ink-soft);
+  line-height: 1.55;
+}
+
+@media (hover: hover) {
+  .card:hover .card__media img { transform: scale(calc(var(--z, 1) * 1.04)); }
+  .card:hover .card__title { text-decoration: underline; text-underline-offset: 4px; }
+}
+.card:focus-visible { outline-offset: 6px; }
+
+.grid__empty {
+  grid-column: 1 / -1;
+  padding: var(--s6) 0;
+  text-align: center;
+  color: var(--ink-soft);
+  letter-spacing: .2em;
+}
+
+/* ==========================================================
+   Footer / 回到頂端
+   ========================================================== */
+.footer {
+  text-align: center;
+  padding: var(--s3) var(--s2) var(--s4);
+  color: var(--ink-soft);
+  font-size: 14px;
+  border-top: 1px solid var(--line);
+}
+.footer p { margin: 0; }
+
+.to-top {
+  position: fixed; right: var(--s2); bottom: var(--s2); z-index: 20;
+  width: 48px; height: 48px;
+  display: grid; place-items: center;
+  border: 2px solid var(--ink);
+  background: var(--bg);
+  color: var(--ink);
+  opacity: 0; transform: translateY(12px); pointer-events: none;
+  transition: opacity .25s, transform .25s var(--ease), background .15s, color .15s;
+}
+.to-top.is-visible { opacity: 1; transform: none; pointer-events: auto; }
+.to-top:hover { background: var(--ink); color: #fff; }
+
+/* ==========================================================
+   文章視窗：滿版
+   ========================================================== */
+.modal {
+  width: 100vw; max-width: none;
+  height: 100vh; height: 100dvh; max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--bg);
+  color: var(--ink);
+  overflow: hidden;
+}
+.modal[open] { display: flex; flex-direction: column; animation: modal-in .3s var(--ease); }
+.modal::backdrop { background: var(--bg); }
+
+.modal__scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+
+.modal__hero {
+  margin: 0;
+  width: 100%;
+  height: clamp(240px, 56vh, 640px);
+  overflow: hidden;
+  background: var(--placeholder);
+}
+.modal__hero img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transform: scale(var(--z, 1));
+}
+
+.modal__body {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--s4) var(--s3) var(--s5);
+}
+.modal__body::after { content: ""; display: block; clear: both; }
+
+.modal__tag {
+  margin: 0;
+  font-size: 13px;
+  letter-spacing: .15em;
+  color: var(--ink-soft);
+}
+.modal__title {
+  margin: 2px 0 var(--s3);
+  font-weight: 700;
+  font-size: clamp(26px, 4vw, 40px);
+  line-height: 1.3;
+  letter-spacing: .02em;
+  text-wrap: balance;
+}
+
+.modal__figure {
+  float: right;
+  width: min(36%, 300px);
+  aspect-ratio: 3 / 4;
+  margin: 4px 0 var(--s3) var(--s4);
+  overflow: hidden;
+  background: var(--placeholder);
+}
+.modal__figure img { width: 100%; height: 100%; object-fit: cover; transform: scale(var(--z, 1)); }
+
+.modal__text { font-size: 17px; line-height: 1.9; }
+.modal__text p { margin: 0 0 1.2em; max-width: 62ch; }
+
+.modal__more { clear: both; display: grid; gap: var(--s3); margin-top: var(--s4); }
+.modal__more figure { margin: 0; background: var(--placeholder); }
+.modal__more img { width: 100%; height: auto; }
+
+@media (max-width: 640px) {
+  .modal__hero { height: clamp(200px, 38vh, 360px); }
+  .modal__body { padding: var(--s3) var(--s2) var(--s4); }
+  .modal__figure { width: 42%; margin-left: var(--s2); }
+  .modal__text { font-size: 16px; }
+}
+
+/* 底部：X 與 → */
+.modal__actions {
+  display: flex; justify-content: flex-end; align-items: center; gap: var(--s1);
+  padding: var(--s1) var(--s3);
+  padding-bottom: max(var(--s1), env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+  background: var(--bg);
+}
+@media (max-width: 640px) { .modal__actions { padding-left: var(--s2); padding-right: var(--s2); } }
+
+.icon-btn {
+  width: 48px; height: 48px;
+  display: grid; place-items: center;
+  border: 2px solid var(--ink);
+  background: var(--bg);
+  color: var(--ink);
+  transition: background .15s, color .15s;
+}
+.icon-btn:hover { background: var(--ink); color: #fff; }
+.icon-btn--next { background: var(--ink); color: #fff; }
+.icon-btn--next:hover { background: #333; border-color: #333; }
+
+body.modal-open { overflow: hidden; }
+
+/* ==========================================================
+   動畫
+   ========================================================== */
+@keyframes fade     { from { opacity: 0; } to { opacity: 1; } }
+@keyframes rise     { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes modal-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+  html { scroll-behavior: auto; }
+}

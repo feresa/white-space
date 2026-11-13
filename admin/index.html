@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#fbf8f1">
+  <title>後台｜留白教室</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <!-- 登入 -->
+  <main class="login" id="login" hidden>
+    <form class="login__card" id="login-form">
+      <img src="/assets/logo.webp" alt="留白教室 White Space" width="975" height="816">
+      <h1>後台登入</h1>
+      <label class="field">
+        <span>密碼</span>
+        <input type="password" name="password" autocomplete="current-password" required>
+      </label>
+      <p class="form-error" id="login-error" role="alert"></p>
+      <button class="btn btn--primary btn--block" type="submit">登入</button>
+    </form>
+  </main>
+
+  <!-- 後台 -->
+  <div class="app" id="app" hidden>
+    <header class="topbar">
+      <a class="topbar__brand" href="#cards">
+        <img src="/assets/logo.webp" alt="" width="975" height="816">
+        <span>後台</span>
+      </a>
+      <div class="topbar__actions">
+        <a class="btn btn--ghost" href="/" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>看網站</span>
+        </a>
+        <button class="btn btn--ghost" type="button" id="logout">登出</button>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="後台功能">
+      <a href="#cards" data-tab="cards">卡片</a>
+      <a href="#settings" data-tab="settings">網站設定</a>
+      <a href="#media" data-tab="media">圖庫</a>
+      <a href="#account" data-tab="account">帳號</a>
+    </nav>
+
+    <main class="view" id="view"></main>
+
+    <div class="savebar" id="savebar" hidden>
+      <span>有還沒儲存的變更</span>
+      <div>
+        <button class="btn btn--ghost" type="button" id="revert">還原</button>
+        <button class="btn btn--primary" type="button" id="save">儲存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 圖庫選圖 -->
+  <dialog class="picker" id="picker" aria-labelledby="picker-title">
+    <div class="picker__head">
+      <h2 id="picker-title">選擇圖片</h2>
+      <label class="btn btn--ghost">
+        上傳新圖片
+        <input type="file" accept="image/*" multiple hidden id="picker-upload">
+      </label>
+      <button class="icon-btn" type="button" data-close aria-label="關閉">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="media-grid" id="picker-grid"></div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
