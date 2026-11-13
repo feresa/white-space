@@ -155,6 +155,7 @@ main {
   gap: var(--s4) var(--s3);
 }
 @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); gap: var(--s3) var(--s2); } }
+@media (max-width: 640px) { .grid { grid-template-columns: 1fr; gap: var(--s4); } }   /* 手機：一排一張 */
 
 .grid > li { animation: rise .45s var(--ease) both; }
 
