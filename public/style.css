@@ -137,15 +137,19 @@ a.menu__item:focus-visible { outline-offset: 4px; }
     --img-pad: 2.6px;                                           /* 圖示圖檔上下的空白（23.7px 高的 4/36） */
   }
   .menu {
-    flex-wrap: wrap;
+    display: grid;                                              /* 手機稿是兩欄：左欄靠右、右欄靠左，最後一個（單數時）置中 */
+    grid-template-columns: auto auto;
     justify-content: center;
-    gap: calc(10.4vw - 23.7px) 6vw;                             /* 行距約 10.4vw（圖示上緣到上緣）、項目間距 6vw */
+    gap: calc(10.4vw - 23.7px) 6vw;                             /* 行距約 10.4vw（圖示上緣到上緣）、欄距 6vw */
     margin-top: calc(var(--mid) - var(--logo-pad) - var(--img-pad));
     padding: 0 0 calc(6.2vw - var(--img-pad));                  /* 最後一行 → 底線 約 6.2vw */
     font-size: 10.5px;                                          /* 手機稿的字比較小，字距比較寬 */
     letter-spacing: .075em;
   }
   .menu__item { gap: 8px; min-height: 0; padding: 8px 0; margin: -8px 0; }   /* 觸控範圍加大但不影響排版 */
+  .menu__item:nth-child(odd) { justify-self: end; }
+  .menu__item:nth-child(even) { justify-self: start; }
+  .menu__item:last-child:nth-child(odd) { grid-column: 1 / -1; justify-self: center; }
   .menu__img { height: 23.7px; }                                /* 圖示本體約 18px 高 */
   .menu__text { top: 1px; }
 }
