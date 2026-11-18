@@ -232,6 +232,10 @@
               ...cats.map(c => h("option", { value: c, selected: c === entry.tag }, c)));
           })(),
           h("small", {}, "分類名稱在「網站設定」修改")),
+        h("label", { class: "field" }, h("span", {}, "日期"),
+          h("input", { type: "date", value: entry.date || "", max: "9999-12-31",
+            onchange: e => { entry.date = e.target.value; changed(); } }),
+          h("small", {}, "首頁依日期由新到舊排列")),
         h("label", { class: "field" }, h("span", {}, "狀態"),
           h("span", { class: "check" },
             h("input", { type: "checkbox", checked: entry.published !== false,
@@ -312,12 +316,15 @@
   }
 
   /* ---------- 卡片 ---------- */
+  const today = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); };
+  // 跟首頁一樣：依日期由新到舊，沒有日期的排最後
+  const byDateDesc = items => items.map((it, i) => [it, i])
+    .sort((a, b) => (b[0].date || "").localeCompare(a[0].date || "") || a[1] - b[1]).map(x => x[0]);
+
   function renderCards() {
-    const items = doc.items;
     const list = h("ul", { class: "list" });
-    items.forEach((it, i) => {
+    byDateDesc(doc.items).forEach(it => {
       const thumb = it.images[0];
-      const move = d => { const j = i + d; [items[i], items[j]] = [items[j], items[i]]; changed(); renderCards(); };
       list.append(h("li", { class: "row" },
         h("div", { class: "row__thumb" }, thumb && (() => {
           const im = h("img", { src: thumb.src, alt: "", loading: "lazy" });
@@ -327,11 +334,10 @@
         h("div", { class: "row__main" },
           h("button", { class: "row__title", type: "button", onclick: () => { location.hash = `#cards/${it.id}`; } }, it.title || "（未命名）"),
           h("div", { class: "row__meta" },
+            h("span", { class: "badge" }, it.date || "沒有日期"),
             it.tag && h("span", { class: "badge" }, it.tag),
             it.published === false && h("span", { class: "badge badge--draft" }, "草稿・未公開"))),
         h("div", { class: "row__actions" },
-          h("button", { class: "icon-btn", type: "button", "aria-label": "往上移", disabled: i === 0, onclick: () => move(-1) }, icon(I.up)),
-          h("button", { class: "icon-btn", type: "button", "aria-label": "往下移", disabled: i === items.length - 1, onclick: () => move(1) }, icon(I.down)),
           h("button", { class: "btn btn--sm", type: "button", onclick: () => { location.hash = `#cards/${it.id}`; } }, "編輯"))
       ));
     });
@@ -340,12 +346,12 @@
       h("div", { class: "view__head" },
         h("h1", {}, "卡片"),
         h("button", { class: "btn btn--primary", type: "button", onclick: () => {
-          const it = { id: uid(), tag: (doc.site.categories || [])[0] || "", title: "新的卡片", summary: "", text: "", images: [], figure: null, published: false };
+          const it = { id: uid(), tag: (doc.site.categories || [])[0] || "", title: "新的卡片", summary: "", text: "", images: [], figure: null, date: today(), published: false };
           doc.items.unshift(it); changed();
           location.hash = `#cards/${it.id}`;
         } }, "＋ 新增卡片")),
-      h("p", { class: "hint" }, "首頁的卡片會照這裡的順序排列。新卡片預設是草稿，記得打勾「公開」再儲存。"),
-      items.length ? list : h("p", { class: "empty" }, "還沒有卡片")
+      h("p", { class: "hint" }, "首頁和分類頁都依「日期」由新到舊排列，要調整順序就改日期。新卡片預設是今天、草稿，記得打勾「公開」再儲存。"),
+      doc.items.length ? list : h("p", { class: "empty" }, "還沒有卡片")
     );
   }
 
@@ -401,7 +407,7 @@
       menuPanel(),
       h("div", { class: "panel" },
         h("h2", {}, "分類"),
-        h("p", { class: "hint" }, "一行一個。首頁只會顯示有卡片的分類。改名字的話，卡片也要重新選一次分類。"),
+        h("p", { class: "hint" }, "一行一個。每個分類有自己的頁面（選單可以連過去）。改名字的話，卡片和選單也要重新選一次分類。"),
         h("label", { class: "field" }, h("span", {}, "分類清單"),
           h("textarea", { style: "min-height:120px",
             oninput: e => { s.categories = e.target.value.split("\n").map(x => x.trim()).filter(Boolean); changed(); } },
@@ -411,11 +417,11 @@
 
   /* ---------- 首頁選單 ---------- */
   const DEFAULT_MENU = [
-    { label: "Bulletin Board", image: "/assets/menu/icon-board.svg", href: "#works" },
-    { label: "Teacher", image: "/assets/menu/icon-teacher.svg", href: "" },
-    { label: "Classroom Activities", image: "/assets/menu/icon-activities.svg", href: "" },
-    { label: "Weekly diary", image: "/assets/menu/icon-diary.svg", href: "" },
-    { label: "Instagram", image: "/assets/menu/icon-instagram.svg", href: "" }
+    { label: "Bulletin Board", image: "/assets/menu/icon-board.svg", href: "#works", category: "" },
+    { label: "Teacher", image: "/assets/menu/icon-teacher.svg", href: "", category: "Teacher" },
+    { label: "Classroom Activities", image: "/assets/menu/icon-activities.svg", href: "", category: "Classroom Activities" },
+    { label: "Weekly diary", image: "/assets/menu/icon-diary.svg", href: "", category: "Weekly diary" },
+    { label: "Instagram", image: "/assets/menu/icon-instagram.svg", href: "", category: "" }
   ];
   function menuPanel() {
     const s = doc.site;
@@ -435,9 +441,14 @@
             m.image && h("button", { class: "btn btn--sm btn--danger", type: "button", onclick: () => { m.image = ""; changed(); redraw(); } }, "清除"))),
         h("label", { class: "field" }, h("span", {}, "文字"),
           h("input", { type: "text", value: m.label || "", maxlength: "40", oninput: e => { m.label = e.target.value; changed(); } })),
-        h("label", { class: "field menu-row__href" }, h("span", {}, "連結"),
-          h("input", { type: "text", value: m.href || "", maxlength: "300", placeholder: "例如 #works、/about 或 https://instagram.com/…",
-            oninput: e => { m.href = e.target.value; changed(); } })),
+        h("div", { class: "field menu-row__href" }, h("span", {}, "連結"),
+          h("select", { "aria-label": "連到哪裡", onchange: e => { m.category = e.target.value; changed(); redraw(); } },
+            h("option", { value: "" }, "自訂連結（下面填網址）"),
+            ...(doc.site.categories || []).map(c => h("option", { value: c, selected: c === m.category }, `分類：${c}`))),
+          m.category
+            ? h("small", {}, `點了會顯示「${m.category}」分類的文章`)
+            : h("input", { type: "text", value: m.href || "", maxlength: "300", placeholder: "例如 #works 或 https://instagram.com/…", "aria-label": "自訂連結",
+                oninput: e => { m.href = e.target.value; changed(); }, style: "margin-top:6px" })),
         h("div", { class: "menu-row__btns" },
           h("button", { class: "icon-btn", type: "button", "aria-label": "往前", disabled: i === 0, onclick: () => move(-1) }, icon(I.up)),
           h("button", { class: "icon-btn", type: "button", "aria-label": "往後", disabled: i === s.menu.length - 1, onclick: () => move(1) }, icon(I.down)),
@@ -446,7 +457,7 @@
     if (!s.menu.length) list.append(h("p", { class: "empty" }, "沒有選單項目（首頁只會顯示 Logo 下方的線）"));
     return h("div", { class: "panel" },
       h("h2", {}, "首頁選單"),
-      h("p", { class: "hint" }, "Logo 下方那一排，最多 8 個，由上到下就是由左到右。每一項由「圖示 + 文字」組成（文字用 Nunito 粗體）。圖示高度會縮放成 36px，建議用背景透明的 PNG / WebP，也可以不放。連結留空的話，那一項會顯示但點不動。\n#works 是捲到作品區；也可以填 https:// 開頭的網址（會在新分頁開啟）。"),
+      h("p", { class: "hint" }, "Logo 下方那一排，最多 8 個，由上到下就是由左到右。每一項由「圖示 + 文字」組成（文字用 Nunito 粗體）。圖示高度會縮放成 36px，建議用背景透明的 PNG / WebP，也可以不放。連結可以選「分類」（點了只顯示那一類的文章），或自訂網址：#works 是捲到作品區，https:// 開頭的網址會在新分頁開啟；留空的話那一項會顯示但點不動。點 Logo 一律回首頁（全部文章）。"),
       list,
       h("div", { class: "add-row" },
         s.menu.length < 8 && h("button", { class: "btn", type: "button", onclick: () => { s.menu.push({ label: "新項目", image: "", href: "" }); changed(); redraw(); } }, "＋ 新增選單項目"),

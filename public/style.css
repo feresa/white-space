@@ -77,6 +77,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   align-items: center;
 }
 .banner__logo { margin: 0; height: var(--logo-h); }
+.banner__logo a { display: block; height: 100%; border-radius: 0; }      /* Logo 點了回首頁 */
 .banner__logo img {
   height: 100%; width: auto;
   animation: fade .8s var(--ease) both;
@@ -115,6 +116,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
 a.menu__item { transition: opacity .15s; }
 @media (hover: hover) { a.menu__item:hover { opacity: .55; } }
 a.menu__item:focus-visible { outline-offset: 4px; }
+.menu__item[aria-current="page"] .menu__text {                  /* 目前所在的分類 */
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+}
 @media (pointer: coarse) { .menu__item { min-height: 44px; } }   /* 觸控裝置：確保好點 */
 
 .banner--dark { color: #fff; }

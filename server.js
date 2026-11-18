@@ -135,20 +135,26 @@ const isDark = hex => {
 
 /* 首頁選單：每一項 = 圖示（設計稿切出來的線條向量圖，可不放）+ 文字 + 連結。沒有設定過就用這組預設 */
 const DEFAULT_MENU = [
-  { label: "Bulletin Board", image: "/assets/menu/icon-board.svg", href: "#works" },
-  { label: "Teacher", image: "/assets/menu/icon-teacher.svg", href: "" },
-  { label: "Classroom Activities", image: "/assets/menu/icon-activities.svg", href: "" },
-  { label: "Weekly diary", image: "/assets/menu/icon-diary.svg", href: "" },
-  { label: "Instagram", image: "/assets/menu/icon-instagram.svg", href: "" }
+  { label: "Bulletin Board", image: "/assets/menu/icon-board.svg", href: "#works", category: "" },
+  { label: "Teacher", image: "/assets/menu/icon-teacher.svg", href: "", category: "Teacher" },
+  { label: "Classroom Activities", image: "/assets/menu/icon-activities.svg", href: "", category: "Classroom Activities" },
+  { label: "Weekly diary", image: "/assets/menu/icon-diary.svg", href: "", category: "Weekly diary" },
+  { label: "Instagram", image: "/assets/menu/icon-instagram.svg", href: "", category: "" }
 ];
+/* 分類：每個分類有自己的網址 /c/<slug>；首頁顯示全部 */
+const DEFAULT_CATEGORIES = ["Teacher", "Classroom Activities", "Weekly diary"];
+const slugOf = name => String(name).trim().toLowerCase().replace(/\s+/g, "-");
+const categoryUrl = name => `/c/${encodeURIComponent(slugOf(name))}`;
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const validDate = d => DATE_RE.test(d || "") && !isNaN(Date.parse(d + "T00:00:00Z")) && new Date(d + "T00:00:00Z").toISOString().slice(0, 10) === d;
 // 舊版資料的轉換：舊的 icon 欄位、以及「整張選單圖（圖示+文字）」都換成現在的純圖示
 const OLD_ICON_IMAGE = { board: "board", owl: "teacher", plane: "activities", book: "diary", instagram: "instagram" };
 const OLD_FULL_IMAGE = /^\/assets\/menu\/(board|teacher|activities|diary|instagram)\.svg$/;
 // 內建的選單圖示（SVG，只放在 assets/menu/）或上傳／內建的點陣圖；上傳區不收 SVG
 const MENU_IMG_RE = /^\/(assets\/menu\/[A-Za-z0-9_-]+\.svg|(assets|uploads)\/[A-Za-z0-9._-]+\.(jpe?g|png|webp|gif|avif))$/i;
 const HREF_RE = /^(#[\w-]*|\/(?!\/)[^\s]*|https?:\/\/[^\s]+|mailto:[^\s]+)$/i;
-function cleanMenu(list) {
-  if (!Array.isArray(list)) return DEFAULT_MENU.map(m => ({ ...m }));
+function cleanMenu(list, categories) {
+  if (!Array.isArray(list)) return DEFAULT_MENU.map(m => ({ ...m, category: categories.includes(m.category) ? m.category : "" }));
   return list.slice(0, 8).map(m => {
     m = m && typeof m === "object" ? m : {};
     const href = typeof m.href === "string" ? m.href.trim().slice(0, 300) : "";
@@ -159,7 +165,8 @@ function cleanMenu(list) {
     return {
       label: str(m.label, 40),
       image: MENU_IMG_RE.test(image) ? image : "",
-      href: HREF_RE.test(href) ? href : ""
+      href: HREF_RE.test(href) ? href : "",
+      category: categories.includes(m.category) ? m.category : ""      // 有選分類的話，連結就是那個分類頁
     };
   }).filter(m => m.label);
 }
@@ -189,17 +196,31 @@ function cleanEntry(e, categories) {
 function cleanContent(input) {
   const c = input && typeof input === "object" ? input : {};
   const s = c.site || {};
-  const categories = (Array.isArray(s.categories) ? s.categories : [])
-    .map(x => str(x, 20)).filter(Boolean).slice(0, 12);
+  let categories = Array.isArray(s.categories)
+    ? s.categories.map(x => str(x, 30)).filter(Boolean).slice(0, 12)
+    : DEFAULT_CATEGORIES.slice();
+  // 舊的範例分類（課程／手記）→ 新的三個分類；只在分類還是當初範例時才轉，使用者改過就不動
+  let rawItems = Array.isArray(c.items) ? c.items : [];
+  if (categories.length === 2 && categories[0] === "課程" && categories[1] === "手記") {
+    const map = { "課程": "Classroom Activities", "手記": "Weekly diary" };
+    categories = DEFAULT_CATEGORIES.slice();
+    const base = Date.parse("2026-11-01T00:00:00Z");
+    rawItems = rawItems.map((it, i) => ({
+      ...it,
+      tag: map[it.tag] || it.tag,
+      date: it.date || new Date(base - i * 86400000).toISOString().slice(0, 10)   // 照原本的順序給日期（新 → 舊）
+    }));
+  }
   const usedIds = new Set();
-  const items = (Array.isArray(c.items) ? c.items : []).slice(0, 500).map(it => {
+  const items = rawItems.slice(0, 500).map(it => {
     let id = /^[a-z0-9-]{4,40}$/.test(it.id || "") && !usedIds.has(it.id) ? it.id : crypto.randomBytes(5).toString("hex");
     usedIds.add(id);
     return {
       id,
       ...cleanEntry(it),
-      tag: str(it.tag, 20),
+      tag: str(it.tag, 30),
       summary: str(it.summary, 200),
+      date: validDate(it.date) ? it.date : "",
       published: it.published !== false
     };
   });
@@ -212,7 +233,7 @@ function cleanContent(input) {
       description: str(s.description, 300),
       footer: str(s.footer, 200),
       bannerColor: colorOf(s.bannerColor),
-      menu: cleanMenu(s.menu),
+      menu: cleanMenu(s.menu, categories),
       categories
     },
     about,
@@ -220,11 +241,18 @@ function cleanContent(input) {
   };
 }
 
+/* 依日期由新到舊；沒填日期的排在最後，維持原本順序 */
+function byDateDesc(items) {
+  return items.map((it, i) => [it, i])
+    .sort((a, b) => (b[0].date || "").localeCompare(a[0].date || "") || a[1] - b[1])
+    .map(x => x[0]);
+}
+
 async function loadContent() { return cleanContent(await store.readContent()); }
 async function saveContent(next) { await store.writeContent(next); }
 async function publicContent() {
   const c = await loadContent();
-  c.items = c.items.filter(i => i.published);
+  c.items = byDateDesc(c.items.filter(i => i.published));
   return c;
 }
 
@@ -261,33 +289,50 @@ app.use((req, res, next) => {
 const escapeJSON = obj => JSON.stringify(obj).replace(/</g, "\\u003c").replace(/[\u2028\u2029]/g, c => (c === "\u2028" ? "\\u2028" : "\\u2029"));
 const escapeHTML = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
-function renderMenu(menu) {
+function renderMenu(menu, current) {
   return (menu || []).map(m => {
     // 圖示是裝飾（旁邊就有文字），所以 alt 留空
     const inner = (m.image ? `<img class="menu__img" src="${escapeHTML(m.image)}" alt="" decoding="async">` : "")
       + `<span class="menu__text">${escapeHTML(m.label)}</span>`;
-    if (!m.href) return `<span class="menu__item">${inner}</span>`;
-    const ext = /^https?:/i.test(m.href) ? ' target="_blank" rel="noopener"' : "";
-    return `<a class="menu__item" href="${escapeHTML(m.href)}"${ext}>${inner}</a>`;
+    const href = m.category ? categoryUrl(m.category) : m.href;
+    if (!href) return `<span class="menu__item">${inner}</span>`;
+    const ext = /^https?:/i.test(href) ? ' target="_blank" rel="noopener"' : "";
+    const cur = m.category && m.category === current ? ' aria-current="page"' : "";
+    return `<a class="menu__item" href="${escapeHTML(href)}"${ext}${cur}>${inner}</a>`;
   }).join("");
 }
 
-app.get(["/", "/index.html"], wrap(async (req, res) => {
+/* 首頁（全部文章）與分類頁（只有該分類），都依日期由新到舊 */
+async function renderPage(req, res, category) {
   const tpl = fs.readFileSync(VIEW_FILE, "utf8");
   const c = await publicContent();
+  if (category) c.items = c.items.filter(i => i.tag === category);
+  c.view = { category: category || "" };
+  const title = category ? `${category}｜${c.site.name}` : c.site.name;
   const ogImg = (c.items[0] && c.items[0].images[0] && c.items[0].images[0].src) || "/assets/illust-pink.webp";
   const html = tpl
+    .replace(/<title>{{SITE_NAME}}<\/title>/, `<title>${escapeHTML(title)}</title>`)
     .replace(/{{SITE_NAME}}/g, escapeHTML(c.site.name))
     .replace(/{{DESCRIPTION}}/g, escapeHTML(c.site.description || c.site.tagline))
     .replace(/{{TAGLINE}}/g, escapeHTML(c.site.tagline))
     .replace(/{{OG_IMAGE}}/g, escapeHTML(ogImg))
     .replace(/{{BANNER_COLOR}}/g, c.site.bannerColor)
     .replace(/{{BANNER_CLASS}}/g, isDark(c.site.bannerColor) ? "banner--dark" : "")
-    .replace("<!--MENU-->", renderMenu(c.site.menu))
+    .replace("<!--MENU-->", renderMenu(c.site.menu, category))
     .replace("<!--CONTENT-->", `<script>window.WS_CONTENT=${escapeJSON(c)};</script>`);
   // 線上讓 CDN 快取 10 秒，訪客多時不會每次都去讀儲存空間
   res.setHeader("Cache-Control", ONLINE ? "public, max-age=0, s-maxage=10, stale-while-revalidate=30" : "no-cache");
   res.type("html").send(html);
+}
+
+app.get(["/", "/index.html"], wrap((req, res) => renderPage(req, res, null)));
+
+app.get("/c/:slug", wrap(async (req, res) => {
+  const want = slugOf(req.params.slug);
+  const c = await loadContent();
+  const category = c.site.categories.find(x => slugOf(x) === want);
+  if (!category) return res.redirect(302, "/");                    // 找不到的分類就回首頁
+  return renderPage(req, res, category);
 }));
 
 app.use("/assets", express.static(path.join(PUBLIC_DIR, "assets"), { maxAge: "7d" }));
