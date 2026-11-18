@@ -135,7 +135,7 @@ const isDark = hex => {
 
 /* 首頁選單：每一項 = 圖示（設計稿切出來的線條向量圖，可不放）+ 文字 + 連結。沒有設定過就用這組預設 */
 const DEFAULT_MENU = [
-  { label: "Bulletin Board", image: "/assets/menu/icon-board.svg", href: "#works", category: "" },
+  { label: "Bulletin Board", image: "/assets/menu/icon-board.svg", href: "#bulletin", category: "" },   // 跳出獨立的公告文章
   { label: "Teacher", image: "/assets/menu/icon-teacher.svg", href: "", category: "Teacher" },
   { label: "Classroom Activities", image: "/assets/menu/icon-activities.svg", href: "", category: "Classroom Activities" },
   { label: "Weekly diary", image: "/assets/menu/icon-diary.svg", href: "", category: "Weekly diary" },
@@ -225,7 +225,7 @@ function cleanContent(input) {
     };
   });
   const about = cleanEntry(c.about || {});
-  about.tag = str((c.about || {}).tag, 20) || "關於";
+  about.tag = "";                                     // 公告文章（Bulletin Board）不屬於任何分類
   return {
     site: {
       name: str(s.name, 60) || "留白教室 White Space",
