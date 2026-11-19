@@ -269,103 +269,101 @@ main {
 .to-top:hover { background: var(--ink); color: #fff; }
 
 /* ==========================================================
-   文章視窗：滿版
+   文章視窗：置中的白色紙張，右下陰影；四周白底
+   比例取自設計稿（1920 寬）：紙張約 1460 × 1022，大圖 1065 寬、完整顯示原圖比例，
+   文字欄約 950 寬、字距寬；右下 4 顆圓鈕（上一篇／下一篇／關閉／分享），下方細線＋版權
    ========================================================== */
 .modal {
-  width: 100vw; max-width: none;
-  height: 100vh; height: 100dvh; max-height: none;
-  margin: 0;
+  width: min(1460px, calc(100vw - 48px));
+  height: calc(100vh - 112px); height: calc(100dvh - 112px);
+  max-width: none; max-height: none;
+  margin: auto;
   padding: 0;
   border: 0;
-  background: var(--bg);
+  background: #fff;
   color: var(--ink);
+  box-shadow: 10px 12px 30px rgba(0, 0, 0, .2), 0 0 2px rgba(0, 0, 0, .05);
   overflow: hidden;
 }
 .modal[open] { display: flex; flex-direction: column; animation: modal-in .3s var(--ease); }
-.modal::backdrop { background: var(--bg); }
+.modal::backdrop { background: #fff; }                          /* 設計稿：紙張四周是純白 */
 
-.modal__scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.modal__scroll { position: relative; flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 35px 0 24px; }
 
-.modal__hero {
-  margin: 0;
-  width: 100%;
-  height: clamp(240px, 56vh, 640px);
-  overflow: hidden;
-  background: var(--placeholder);
-}
-.modal__hero img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  transform: scale(var(--z, 1));
-}
+.modal__hero { margin: 0 auto; width: min(73%, 1065px); background: var(--placeholder); }
+.modal__hero img { display: block; width: 100%; height: auto; }          /* 原圖比例，不裁切 */
 
-.modal__body {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: var(--s4) var(--s3) var(--s5);
-}
-.modal__body::after { content: ""; display: block; clear: both; }
-
-.modal__tag {
-  margin: 0;
-  font-size: 13px;
-  letter-spacing: .15em;
-  color: var(--ink-soft);
-}
+.modal__body { max-width: 1000px; margin: 0 auto; padding: 54px 24px 24px; }
+.modal__tag { margin: 0 0 6px; font-size: 13px; letter-spacing: .15em; color: var(--ink-soft); }
 .modal__title {
-  margin: 2px 0 var(--s3);
+  margin: 0 0 42px;
   font-weight: 700;
-  font-size: clamp(26px, 4vw, 40px);
-  line-height: 1.3;
-  letter-spacing: .02em;
+  font-size: clamp(24px, 2.4vw, 32px);
+  line-height: 1.35;
+  letter-spacing: .1em;
   text-wrap: balance;
 }
-
-.modal__figure {
-  float: right;
-  width: min(36%, 300px);
-  aspect-ratio: 3 / 4;
-  margin: 4px 0 var(--s3) var(--s4);
-  overflow: hidden;
-  background: var(--placeholder);
-}
+.modal__text { font-size: 17px; line-height: 2.1; letter-spacing: .12em; }
+.modal__text p { margin: 0 0 1.4em; }
+.modal__last { display: flex; align-items: flex-start; gap: 40px; }   /* 最後一段＋內文小圖並排 */
+.modal__last p { margin: 0; }
+.modal__figure { flex: none; width: 150px; aspect-ratio: 1; margin: -10px 0 0; overflow: hidden; background: var(--placeholder); }
 .modal__figure img { width: 100%; height: 100%; object-fit: cover; transform: scale(var(--z, 1)); }
 
-.modal__text { font-size: 17px; line-height: 1.9; }
-.modal__text p { margin: 0 0 1.2em; max-width: 62ch; }
+.modal__more { display: grid; gap: var(--s3); width: min(73%, 1065px); margin: 0 auto; padding-bottom: var(--s3); }
+.modal__more figure { margin: 0; }
+.modal__more img { display: block; width: 100%; height: auto; }
 
-.modal__more { clear: both; display: grid; gap: var(--s3); margin-top: var(--s4); }
-.modal__more figure { margin: 0; background: var(--placeholder); }
-.modal__more img { width: 100%; height: auto; }
-
-@media (max-width: 640px) {
-  .modal__hero { height: clamp(200px, 38vh, 360px); }
-  .modal__body { padding: var(--s3) var(--s2) var(--s4); }
-  .modal__figure { width: 42%; margin-left: var(--s2); }
-  .modal__text { font-size: 16px; }
-}
-
-/* 底部：X 與 → */
-.modal__actions {
-  display: flex; justify-content: flex-end; align-items: center; gap: var(--s1);
-  padding: var(--s1) var(--s3);
-  padding-bottom: max(var(--s1), env(safe-area-inset-bottom));
-  border-top: 1px solid var(--line);
-  background: var(--bg);
-}
-@media (max-width: 640px) { .modal__actions { padding-left: var(--s2); padding-right: var(--s2); } }
-
-.icon-btn {
-  width: 48px; height: 48px;
+/* 底部：圓鈕列、細線、版權 */
+.modal__foot { flex: none; padding: 14px 10.3% 18px; background: #fff; }
+.modal__actions { display: flex; justify-content: flex-end; gap: 14px; padding: 0 24px 18px; }
+.circle-btn {
+  width: 38px; height: 38px;
   display: grid; place-items: center;
-  border: 2px solid var(--ink);
-  background: var(--bg);
+  padding: 0;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+  background: #fff;
   color: var(--ink);
   transition: background .15s, color .15s;
 }
-.icon-btn:hover { background: var(--ink); color: #fff; }
-.icon-btn--next { background: var(--ink); color: #fff; }
-.icon-btn--next:hover { background: #333; border-color: #333; }
+.circle-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.circle-btn--share { border: 0; }                                  /* 分享鈕本身就是一個圓圈＋箭頭 */
+.circle-btn--share svg { width: 34px; height: 34px; stroke-width: 1.3; }
+@media (hover: hover) {
+  .circle-btn:hover { background: var(--ink); color: #fff; }
+  .circle-btn--share:hover { background: transparent; color: var(--ink-soft); }
+}
+.modal__footer { margin: 0; padding-top: 14px; border-top: 1px solid var(--ink); text-align: center; font-size: 14px; color: var(--ink-soft); }
+
+.modal__toast {
+  position: absolute; left: 50%; bottom: 120px; transform: translate(-50%, 8px);
+  margin: 0; padding: 8px 16px; background: var(--ink); color: #fff; font-size: 14px;
+  opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s;
+}
+.modal__toast.is-show { opacity: 1; transform: translate(-50%, 0); }
+
+/* 平板 */
+@media (max-width: 1000px) {
+  .modal { width: calc(100vw - 32px); height: calc(100dvh - 48px); }
+  .modal__hero, .modal__more { width: calc(100% - 64px); }
+  .modal__foot { padding-inline: 32px; }
+}
+/* 手機：紙張幾乎滿版 */
+@media (max-width: 640px) {
+  .modal { width: calc(100vw - 20px); height: calc(100dvh - 20px); box-shadow: 4px 6px 18px rgba(0, 0, 0, .18), 0 0 2px rgba(0, 0, 0, .05); }
+  .modal__scroll { padding-top: 16px; }
+  .modal__hero, .modal__more { width: calc(100% - 32px); }
+  .modal__body { padding: 28px 18px 16px; }
+  .modal__title { margin-bottom: 24px; letter-spacing: .06em; }
+  .modal__text { font-size: 15px; line-height: 1.95; letter-spacing: .06em; }
+  .modal__last { flex-wrap: wrap; gap: 16px; }
+  .modal__figure { width: 120px; margin: 0; }
+  .modal__foot { padding: 10px 16px; padding-bottom: max(10px, env(safe-area-inset-bottom)); }
+  .modal__actions { padding: 0 0 10px; gap: 12px; }
+  .circle-btn { width: 40px; height: 40px; }
+  .modal__footer { padding-top: 8px; font-size: 12px; }
+}
 
 body.modal-open { overflow: hidden; }
 

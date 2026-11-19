@@ -42,7 +42,7 @@
     <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 19V5M5.5 11.5 12 5l6.5 6.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </button>
 
-  <!-- 彈出視窗 -->
+  <!-- 文章視窗 -->
   <dialog class="modal" id="modal" aria-labelledby="modal-title">
     <div class="modal__scroll">
       <figure class="modal__hero">
@@ -52,22 +52,29 @@
       <article class="modal__body">
         <p class="modal__tag" id="modal-tag"></p>
         <h2 class="modal__title" id="modal-title"></h2>
-        <figure class="modal__figure" id="modal-figure">
-          <img src="" alt="">
-        </figure>
         <div class="modal__text" id="modal-text"></div>
-        <div class="modal__more" id="modal-more"></div>
       </article>
+      <div class="modal__more" id="modal-more"></div>
     </div>
 
-    <div class="modal__actions">
-      <button type="button" class="icon-btn" data-close aria-label="關閉">
-        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-      </button>
-      <button type="button" class="icon-btn icon-btn--next" data-next aria-label="下一篇">
-        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
+    <div class="modal__foot">
+      <div class="modal__actions">
+        <button type="button" class="circle-btn" data-prev aria-label="上一篇">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5 9 12l5.5 5.5"/></svg>
+        </button>
+        <button type="button" class="circle-btn" data-next aria-label="下一篇">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6.5 15 12l-5.5 5.5"/></svg>
+        </button>
+        <button type="button" class="circle-btn" data-close aria-label="關閉">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8l8 8M16 8l-8 8"/></svg>
+        </button>
+        <button type="button" class="circle-btn circle-btn--share" data-share aria-label="分享這篇文章">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13a8 8 0 1 1-8-8"/><path d="M14.5 3.5h6v6"/><path d="M20.5 3.5 12 12"/></svg>
+        </button>
+      </div>
+      <p class="modal__footer" id="modal-footer"></p>
     </div>
+    <p class="modal__toast" id="modal-toast" role="status" aria-live="polite"></p>
   </dialog>
 
   <!--CONTENT-->

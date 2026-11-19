@@ -10,21 +10,24 @@
 
   const grid = document.getElementById("grid");
   const modal = document.getElementById("modal");
+  const scroller = modal.querySelector(".modal__scroll");
   const heroImg = document.getElementById("modal-hero");
   const moreEl = document.getElementById("modal-more");
   const tagEl = document.getElementById("modal-tag");
   const titleEl = document.getElementById("modal-title");
-  const figure = document.getElementById("modal-figure");
   const textEl = document.getElementById("modal-text");
+  const prevBtn = modal.querySelector("[data-prev]");
   const nextBtn = modal.querySelector("[data-next]");
+  const shareBtn = modal.querySelector("[data-share]");
+  const toastEl = document.getElementById("modal-toast");
   const toTop = document.querySelector(".to-top");
 
-  let filter = "all";
   let visible = items;
   let current = -1;
   let opener = null;
 
   document.getElementById("footer-text").textContent = site.footer || "";
+  document.getElementById("modal-footer").textContent = site.footer || "";
 
   /* 放大時讓焦點盡量落在畫面正中央（邊緣不留白） */
   function zoomOrigin(pos, zoom) {
@@ -49,7 +52,6 @@
 
   /* ---------- 卡片 ---------- */
   function render() {
-    visible = filter === "all" ? items : items.filter(i => i.tag === filter);
     grid.innerHTML = "";
     if (!visible.length) {
       const li = document.createElement("li");
@@ -94,48 +96,64 @@
     });
   }
 
-  /* ---------- 彈出視窗 ---------- */
+  /* ---------- 文章視窗 ---------- */
   function fill(item) {
     tagEl.textContent = item.tag || "";
     tagEl.hidden = !item.tag;
     titleEl.textContent = item.title;
 
-    /* 第一張是上方滿版大圖，其餘的圖接在文字後面一張一張往下排 */
+    /* 第一張是上方大圖（完整顯示原圖比例），其餘的圖接在文字後面一張一張往下排 */
     const imgs = item.images || [];
     heroImg.removeAttribute("src");
     heroImg.parentElement.hidden = !imgs.length;
-    if (imgs.length) applyImage(heroImg, imgs[0]);
+    if (imgs.length) { heroImg.src = imgs[0].src; heroImg.alt = imgs[0].alt || ""; }
+
+    /* 內文；有內文小圖的話，放在最後一段旁邊 */
+    textEl.innerHTML = "";
+    const ps = paragraphs(item.text).map(t => { const p = document.createElement("p"); p.textContent = t; return p; });
+    let figure = null;
+    if (item.figure) {
+      figure = document.createElement("figure");
+      figure.className = "modal__figure";
+      const img = document.createElement("img");
+      applyImage(img, item.figure);
+      figure.append(img);
+    }
+    if (figure && ps.length) {
+      const last = ps.pop();
+      const row = document.createElement("div");
+      row.className = "modal__last";
+      row.append(last, figure);
+      textEl.append(...ps, row);
+    } else {
+      textEl.append(...ps);
+      if (figure) textEl.append(figure);
+    }
 
     moreEl.innerHTML = "";
     imgs.slice(1).forEach(im => {
       const fig = document.createElement("figure");
       const img = document.createElement("img");
-      applyImage(img, im, { lazy: true });
-      img.style.transform = "none";            // 內文裡的圖直接顯示完整比例
-      img.style.objectFit = "contain";
+      img.src = im.src; img.alt = im.alt || ""; img.loading = "lazy"; img.decoding = "async";
       fig.append(img);
       moreEl.append(fig);
     });
 
-    if (item.figure) {
-      figure.hidden = false;
-      applyImage(figure.querySelector("img"), item.figure);
-    } else figure.hidden = true;
-
-    textEl.innerHTML = "";
-    paragraphs(item.text).forEach(p => {
-      const el = document.createElement("p");
-      el.textContent = p;
-      textEl.append(el);
-    });
-
-    modal.querySelector(".modal__scroll").scrollTop = 0;
+    scroller.scrollTop = 0;
   }
+
+  /* 每篇文章有自己的網址：…#p=<id>（分享用） */
+  const linkOf = item => `${location.origin}${location.pathname}#p=${encodeURIComponent(item.id)}`;
+  const setHash = h => history.replaceState(null, "", location.pathname + location.search + h);
 
   function open(idx, trigger) {
     current = idx;
-    fill(visible[idx]);
-    nextBtn.hidden = visible.length < 2;
+    const item = visible[idx];
+    fill(item);
+    const single = visible.length < 2;
+    prevBtn.hidden = single;
+    nextBtn.hidden = single;
+    if (item.id) setHash(`#p=${encodeURIComponent(item.id)}`);
     if (!modal.open) {
       opener = trigger || null;
       modal.showModal();
@@ -144,21 +162,44 @@
   }
 
   const close = () => modal.close();
-  function next(step = 1) {
-    if (visible.length < 2) return;
-    open((current + step + visible.length) % visible.length);
+  function step(d) {
+    if (current < 0 || visible.length < 2) return;
+    open((current + d + visible.length) % visible.length);
+  }
+
+  let toastTimer;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add("is-show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove("is-show"), 2200);
+  }
+  async function share() {
+    const item = visible[current];
+    if (!item) return;
+    const url = linkOf(item);
+    if (navigator.share) {
+      try { await navigator.share({ title: item.title, url }); } catch { /* 使用者取消 */ }
+      return;
+    }
+    try { await navigator.clipboard.writeText(url); toast("已複製文章連結"); }
+    catch { window.prompt("複製這個連結分享：", url); }
   }
 
   modal.addEventListener("close", () => {
     document.body.classList.remove("modal-open");
+    if (location.hash.startsWith("#p=")) setHash("");
+    current = -1;
     if (opener) opener.focus();
   });
   modal.querySelector("[data-close]").addEventListener("click", close);
-  nextBtn.addEventListener("click", () => next(1));
+  prevBtn.addEventListener("click", () => step(-1));
+  nextBtn.addEventListener("click", () => step(1));
+  shareBtn.addEventListener("click", share);
   modal.addEventListener("click", e => { if (e.target === modal) close(); });
   modal.addEventListener("keydown", e => {
-    if (e.key === "ArrowRight") next(1);
-    if (e.key === "ArrowLeft") next(-1);
+    if (e.key === "ArrowRight") step(1);
+    if (e.key === "ArrowLeft") step(-1);
   });
 
   // 手機：左右滑動換篇
@@ -168,7 +209,7 @@
     if (sx === null) return;
     const dx = e.changedTouches[0].clientX - sx;
     const dy = e.changedTouches[0].clientY - sy;
-    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) next(dx < 0 ? 1 : -1);
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) step(dx < 0 ? 1 : -1);
     sx = sy = null;
   });
 
@@ -182,4 +223,15 @@
   });
 
   render();
+
+  /* 打開分享連結：網址帶 #p=<id> 就直接打開那篇 */
+  function openFromHash() {
+    const m = /^#p=(.+)$/.exec(location.hash);
+    if (!m) return;
+    const id = decodeURIComponent(m[1]);
+    const idx = visible.findIndex(i => i.id === id);
+    if (idx >= 0) open(idx);
+  }
+  openFromHash();
+  window.addEventListener("hashchange", openFromHash);
 })();
