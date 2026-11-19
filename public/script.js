@@ -141,6 +141,7 @@
     if (!modal.open) {
       opener = trigger || null;
       modal.showModal();
+      scroller.focus({ preventScroll: true });          // 焦點放在文章本身，不要讓第一顆按鈕出現焦點框
       document.body.classList.add("modal-open");
     }
   }

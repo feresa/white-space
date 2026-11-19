@@ -323,6 +323,9 @@ main {
   transition: opacity .15s, transform .15s var(--ease);
 }
 .circle-btn svg { display: block; width: 100%; height: 100%; }
+.circle-btn:focus { outline: none; }
+.circle-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; border-radius: 50%; }   /* 鍵盤操作時才顯示，圓形 */
+.modal__scroll:focus { outline: none; }
 @media (hover: hover) { .circle-btn:hover { opacity: .55; } }
 .circle-btn:active { transform: scale(.94); }
 .modal__footer { margin: 0; padding-top: 14px; border-top: 1px solid var(--ink); text-align: center; font-size: 14px; color: var(--ink-soft); }
