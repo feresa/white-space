@@ -10,7 +10,10 @@
       "Classroom Activities",
       "Weekly diary"
     ],
-    "bannerColor": "#ffffff"
+    "bannerColor": "#ffffff",
+    "homeHidden": [
+      "Bulletin Board"
+    ]
   },
   "about": {
     "tag": "關於",

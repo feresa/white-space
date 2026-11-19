@@ -246,7 +246,10 @@ function cleanContent(input) {
       footer: str(s.footer, 200),
       bannerColor: colorOf(s.bannerColor),
       menu: cleanMenu(rawMenu, categories),
-      categories
+      categories,
+      // 不放在首頁的分類（只在自己的分類頁出現）；沒設定過時預設 Bulletin Board
+      homeHidden: (Array.isArray(s.homeHidden) ? s.homeHidden : ["Bulletin Board"])
+        .filter((x, i, arr) => typeof x === "string" && categories.includes(x) && arr.indexOf(x) === i)
     },
     about,
     items
@@ -319,6 +322,7 @@ async function renderPage(req, res, category) {
   const tpl = fs.readFileSync(VIEW_FILE, "utf8");
   const c = await publicContent();
   if (category) c.items = c.items.filter(i => i.tag === category);
+  else c.items = c.items.filter(i => !c.site.homeHidden.includes(i.tag));     // 首頁不放「不顯示在首頁」的分類
   c.view = { category: category || "" };
   const title = category ? `${category}｜${c.site.name}` : c.site.name;
   const ogImg = (c.items[0] && c.items[0].images[0] && c.items[0].images[0].src) || "/assets/illust-pink.webp";
@@ -367,7 +371,9 @@ app.use(express.static(PUBLIC_DIR, { maxAge: "1h", index: false }));
 
 app.get("/api/content", wrap(async (req, res) => {
   res.setHeader("Cache-Control", "no-cache");
-  res.json(await publicContent());
+  const c = await publicContent();
+  c.items = c.items.filter(i => !c.site.homeHidden.includes(i.tag));          // 跟首頁一致
+  res.json(c);
 }));
 
 /* ---------- 後台 ---------- */

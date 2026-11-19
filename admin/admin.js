@@ -336,6 +336,7 @@
           h("div", { class: "row__meta" },
             h("span", { class: "badge" }, it.date || "沒有日期"),
             it.tag && h("span", { class: "badge" }, it.tag),
+            (doc.site.homeHidden || []).includes(it.tag) && h("span", { class: "badge" }, "不在首頁"),
             it.published === false && h("span", { class: "badge badge--draft" }, "草稿・未公開"))),
         h("div", { class: "row__actions" },
           h("button", { class: "btn btn--sm", type: "button", onclick: () => { location.hash = `#cards/${it.id}`; } }, "編輯"))
@@ -410,8 +411,19 @@
         h("p", { class: "hint" }, "一行一個。每個分類有自己的頁面（選單可以連過去）。改名字的話，卡片和選單也要重新選一次分類。"),
         h("label", { class: "field" }, h("span", {}, "分類清單"),
           h("textarea", { style: "min-height:120px",
-            oninput: e => { s.categories = e.target.value.split("\n").map(x => x.trim()).filter(Boolean); changed(); } },
-            (s.categories || []).join("\n"))))
+            oninput: e => { s.categories = e.target.value.split("\n").map(x => x.trim()).filter(Boolean); changed(); },
+            onchange: () => { const y = scrollY; renderSettings(); scrollTo(0, y); } },
+            (s.categories || []).join("\n"))),
+        h("div", { class: "field" }, h("span", {}, "顯示在首頁"),
+          h("small", { style: "margin:0 0 6px" }, "沒勾的分類，文章不會出現在首頁，只有點進那個分類才看得到。"),
+          ...(s.categories || []).map(c => h("label", { class: "check" },
+            h("input", { type: "checkbox", checked: !(s.homeHidden || []).includes(c),
+              onchange: e => {
+                const set = new Set(s.homeHidden || []);
+                e.target.checked ? set.delete(c) : set.add(c);
+                s.homeHidden = [...set]; changed();
+              } }),
+            c))))
     );
   }
 
