@@ -135,14 +135,14 @@ const isDark = hex => {
 
 /* 首頁選單：每一項 = 圖示（設計稿切出來的線條向量圖，可不放）+ 文字 + 連結。沒有設定過就用這組預設 */
 const DEFAULT_MENU = [
-  { label: "Bulletin Board", image: "/assets/menu/icon-board.svg", href: "#bulletin", category: "" },   // 跳出獨立的公告文章
+  { label: "Bulletin Board", image: "/assets/menu/icon-board.svg", href: "", category: "Bulletin Board" },
   { label: "Teacher", image: "/assets/menu/icon-teacher.svg", href: "", category: "Teacher" },
   { label: "Classroom Activities", image: "/assets/menu/icon-activities.svg", href: "", category: "Classroom Activities" },
   { label: "Weekly diary", image: "/assets/menu/icon-diary.svg", href: "", category: "Weekly diary" },
   { label: "Instagram", image: "/assets/menu/icon-instagram.svg", href: "", category: "" }
 ];
 /* 分類：每個分類有自己的網址 /c/<slug>；首頁顯示全部 */
-const DEFAULT_CATEGORIES = ["Teacher", "Classroom Activities", "Weekly diary"];
+const DEFAULT_CATEGORIES = ["Bulletin Board", "Teacher", "Classroom Activities", "Weekly diary"];
 const slugOf = name => String(name).trim().toLowerCase().replace(/\s+/g, "-");
 const categoryUrl = name => `/c/${encodeURIComponent(slugOf(name))}`;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -211,6 +211,18 @@ function cleanContent(input) {
       date: it.date || new Date(base - i * 86400000).toISOString().slice(0, 10)   // 照原本的順序給日期（新 → 舊）
     }));
   }
+  // 上一版的預設分類（沒有 Bulletin Board）→ 補上 Bulletin Board；使用者自己改過的分類不動
+  if (categories.join("|") === "Teacher|Classroom Activities|Weekly diary") categories.unshift("Bulletin Board");
+  let rawMenu = s.menu;
+  if (Array.isArray(rawMenu)) {
+    const hasBB = categories.includes("Bulletin Board");
+    rawMenu = rawMenu.map(m => {
+      if (!m || m.category) return m;
+      if (hasBB && m.label === "Bulletin Board" && (m.href === "#works" || m.href === "#bulletin" || !m.href)) return { ...m, href: "", category: "Bulletin Board" };
+      if (m.href === "#bulletin") return { ...m, href: "#works" };          // 舊版「公告文章」連結已經沒有了
+      return m;
+    });
+  }
   const usedIds = new Set();
   const items = rawItems.slice(0, 500).map(it => {
     let id = /^[a-z0-9-]{4,40}$/.test(it.id || "") && !usedIds.has(it.id) ? it.id : crypto.randomBytes(5).toString("hex");
@@ -225,7 +237,7 @@ function cleanContent(input) {
     };
   });
   const about = cleanEntry(c.about || {});
-  about.tag = "";                                     // 公告文章（Bulletin Board）不屬於任何分類
+  about.tag = str((c.about || {}).tag, 20) || "關於";
   return {
     site: {
       name: str(s.name, 60) || "留白教室 White Space",
@@ -233,7 +245,7 @@ function cleanContent(input) {
       description: str(s.description, 300),
       footer: str(s.footer, 200),
       bannerColor: colorOf(s.bannerColor),
-      menu: cleanMenu(s.menu, categories),
+      menu: cleanMenu(rawMenu, categories),
       categories
     },
     about,

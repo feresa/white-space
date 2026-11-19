@@ -7,7 +7,6 @@
   }
   const site = data.site || {};
   const items = data.items || [];
-  const bulletin = data.about;                 // Bulletin Board：一篇獨立文章，不屬於任何分類
 
   const grid = document.getElementById("grid");
   const modal = document.getElementById("modal");
@@ -133,41 +132,25 @@
     modal.querySelector(".modal__scroll").scrollTop = 0;
   }
 
-  function show(item, idx, trigger) {
+  function open(idx, trigger) {
     current = idx;
-    fill(item);
-    nextBtn.hidden = idx < 0 || visible.length < 2;        // 獨立文章沒有「下一篇」
+    fill(visible[idx]);
+    nextBtn.hidden = visible.length < 2;
     if (!modal.open) {
       opener = trigger || null;
       modal.showModal();
       document.body.classList.add("modal-open");
     }
   }
-  const open = (idx, trigger) => show(visible[idx], idx, trigger);
-
-  /* Bulletin Board：選單連到 #bulletin 就跳出這篇；網址帶 #bulletin 也會直接打開，方便分享 */
-  const hasBulletin = () => bulletin && bulletin.title;
-  function openBulletin(trigger) {
-    if (!hasBulletin()) return;
-    show(bulletin, -1, trigger);
-    if (location.hash !== "#bulletin") history.replaceState(null, "", location.pathname + location.search + "#bulletin");
-  }
-  document.addEventListener("click", e => {
-    const a = e.target.closest('a[href="#bulletin"]');
-    if (!a) return;
-    e.preventDefault();
-    openBulletin(a);
-  });
 
   const close = () => modal.close();
   function next(step = 1) {
-    if (current < 0 || visible.length < 2) return;
+    if (visible.length < 2) return;
     open((current + step + visible.length) % visible.length);
   }
 
   modal.addEventListener("close", () => {
     document.body.classList.remove("modal-open");
-    if (location.hash === "#bulletin") history.replaceState(null, "", location.pathname + location.search);
     if (opener) opener.focus();
   });
   modal.querySelector("[data-close]").addEventListener("click", close);
@@ -199,6 +182,4 @@
   });
 
   render();
-  if (location.hash === "#bulletin") openBulletin();
-  window.addEventListener("hashchange", () => { if (location.hash === "#bulletin") openBulletin(); });
 })();

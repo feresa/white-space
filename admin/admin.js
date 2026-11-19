@@ -219,7 +219,7 @@
   function entryEditor(entry, { isAbout = false, rerender }) {
     const fields = h("div", { class: "panel" },
       h("h2", {}, "文字"),
-      h("p", { class: "hint" }, isAbout ? "一篇獨立的文章，不屬於任何分類，也不會出現在首頁的文章列表。選單連結選「公告文章」（預設是 Bulletin Board）點了就會跳出這篇。" : "卡片下方的標題、簡介，以及點開後的內文。"),
+      h("p", { class: "hint" }, isAbout ? "按首頁右上角 ⓘ 會看到這段介紹。" : "卡片下方的標題、簡介，以及點開後的內文。"),
       h("label", { class: "field" }, h("span", {}, "標題"),
         h("input", { type: "text", value: entry.title || "", maxlength: "120", required: true,
           oninput: e => { entry.title = e.target.value; changed(); } })),
@@ -377,7 +377,7 @@
   function renderAbout() {
     const rerender = () => { const y = scrollY; renderAbout(); scrollTo(0, y); };
     view.replaceChildren(
-      h("div", { class: "view__head" }, h("h1", {}, "公告文章（Bulletin Board）")),
+      h("div", { class: "view__head" }, h("h1", {}, "關於")),
       ...entryEditor(doc.about, { isAbout: true, rerender })
     );
   }
@@ -417,7 +417,7 @@
 
   /* ---------- 首頁選單 ---------- */
   const DEFAULT_MENU = [
-    { label: "Bulletin Board", image: "/assets/menu/icon-board.svg", href: "#bulletin", category: "" },
+    { label: "Bulletin Board", image: "/assets/menu/icon-board.svg", href: "", category: "Bulletin Board" },
     { label: "Teacher", image: "/assets/menu/icon-teacher.svg", href: "", category: "Teacher" },
     { label: "Classroom Activities", image: "/assets/menu/icon-activities.svg", href: "", category: "Classroom Activities" },
     { label: "Weekly diary", image: "/assets/menu/icon-diary.svg", href: "", category: "Weekly diary" },
@@ -442,17 +442,10 @@
         h("label", { class: "field" }, h("span", {}, "文字"),
           h("input", { type: "text", value: m.label || "", maxlength: "40", oninput: e => { m.label = e.target.value; changed(); } })),
         h("div", { class: "field menu-row__href" }, h("span", {}, "連結"),
-          h("select", { "aria-label": "連到哪裡", onchange: e => {
-              const v = e.target.value;
-              if (v === "#bulletin") { m.category = ""; m.href = "#bulletin"; }
-              else { m.category = v; if (m.href === "#bulletin") m.href = ""; }
-              changed(); redraw(); } },
+          h("select", { "aria-label": "連到哪裡", onchange: e => { m.category = e.target.value; changed(); redraw(); } },
             h("option", { value: "" }, "自訂連結（下面填網址）"),
-            h("option", { value: "#bulletin", selected: !m.category && m.href === "#bulletin" }, "公告文章（跳出 Bulletin Board 那一篇）"),
             ...(doc.site.categories || []).map(c => h("option", { value: c, selected: c === m.category }, `分類：${c}`))),
-          !m.category && m.href === "#bulletin"
-            ? h("small", {}, "點了會跳出「公告文章」，內容在後台「公告文章」分頁編輯")
-            : m.category
+          m.category
             ? h("small", {}, `點了會顯示「${m.category}」分類的文章`)
             : h("input", { type: "text", value: m.href || "", maxlength: "300", placeholder: "例如 #works 或 https://instagram.com/…", "aria-label": "自訂連結",
                 oninput: e => { m.href = e.target.value; changed(); }, style: "margin-top:6px" })),
@@ -464,7 +457,7 @@
     if (!s.menu.length) list.append(h("p", { class: "empty" }, "沒有選單項目（首頁只會顯示 Logo 下方的線）"));
     return h("div", { class: "panel" },
       h("h2", {}, "首頁選單"),
-      h("p", { class: "hint" }, "Logo 下方那一排，最多 8 個，由上到下就是由左到右。每一項由「圖示 + 文字」組成（文字用 Nunito 粗體）。圖示高度會縮放成 36px，建議用背景透明的 PNG / WebP，也可以不放。連結可以選「分類」（點了只顯示那一類的文章）、「公告文章」（跳出一篇獨立文章），或自訂網址：#works 是捲到作品區，https:// 開頭的網址會在新分頁開啟；留空的話那一項會顯示但點不動。點 Logo 一律回首頁（全部文章）。"),
+      h("p", { class: "hint" }, "Logo 下方那一排，最多 8 個，由上到下就是由左到右。每一項由「圖示 + 文字」組成（文字用 Nunito 粗體）。圖示高度會縮放成 36px，建議用背景透明的 PNG / WebP，也可以不放。連結可以選「分類」（點了只顯示那一類的文章），或自訂網址：#works 是捲到作品區，https:// 開頭的網址會在新分頁開啟；留空的話那一項會顯示但點不動。點 Logo 一律回首頁（全部文章）。"),
       list,
       h("div", { class: "add-row" },
         s.menu.length < 8 && h("button", { class: "btn", type: "button", onclick: () => { s.menu.push({ label: "新項目", image: "", href: "" }); changed(); redraw(); } }, "＋ 新增選單項目"),
@@ -533,7 +526,6 @@
     const [tab, sub] = (location.hash.slice(1) || "cards").split("/");
     document.querySelectorAll(".tabs a").forEach(a => { if (a.dataset.tab === tab) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
     if (tab === "cards" && sub) renderCardEditor(sub);
-    else if (tab === "about") renderAbout();
     else if (tab === "settings") renderSettings();
     else if (tab === "media") renderMedia();
     else if (tab === "account") renderAccount();
