@@ -407,11 +407,11 @@
 
   /* ---------- 首頁選單 ---------- */
   const DEFAULT_MENU = [
-    { label: "Bulletin Board", image: "/assets/menu/icon-board.svg", href: "", category: "Bulletin Board" },
-    { label: "Teacher", image: "/assets/menu/icon-teacher.svg", href: "", category: "Teacher" },
-    { label: "Classroom Activities", image: "/assets/menu/icon-activities.svg", href: "", category: "Classroom Activities" },
-    { label: "Weekly diary", image: "/assets/menu/icon-diary.svg", href: "", category: "Weekly diary" },
-    { label: "Instagram", image: "/assets/menu/icon-instagram.svg", href: "", category: "" }
+    { label: "Bulletin Board", labelZh: "公佈欄", image: "/assets/menu/icon-board.svg", href: "", category: "Bulletin Board" },
+    { label: "Teacher", labelZh: "關於老師", image: "/assets/menu/icon-teacher.svg", href: "", category: "Teacher" },
+    { label: "Classroom Activities", labelZh: "課堂活動", image: "/assets/menu/icon-activities.svg", href: "", category: "Classroom Activities" },
+    { label: "Weekly diary", labelZh: "週記", image: "/assets/menu/icon-diary.svg", href: "", category: "Weekly diary" },
+    { label: "Instagram", labelZh: "IG小黑板", image: "/assets/menu/icon-instagram.svg", href: "", category: "" }
   ];
   function menuPanel() {
     const s = doc.site;
@@ -429,8 +429,11 @@
             h("label", { class: "btn btn--sm" }, "上傳", upload),
             h("button", { class: "btn btn--sm", type: "button", onclick: async () => { const img = await pickImage(); if (img) { m.image = img.src; changed(); redraw(); } } }, "從圖庫選"),
             m.image && h("button", { class: "btn btn--sm btn--danger", type: "button", onclick: () => { m.image = ""; changed(); redraw(); } }, "清除"))),
-        h("label", { class: "field" }, h("span", {}, "文字"),
-          h("input", { type: "text", value: m.label || "", maxlength: "40", oninput: e => { m.label = e.target.value; changed(); } })),
+        h("div", { class: "field" },
+          h("label", {}, h("span", {}, "文字（首頁選單）"),
+            h("input", { type: "text", value: m.label || "", maxlength: "40", oninput: e => { m.label = e.target.value; changed(); } })),
+          h("label", { style: "display:block;margin-top:8px" }, h("span", {}, "中文名稱（文章結尾連結）"),
+            h("input", { type: "text", value: m.labelZh || "", maxlength: "40", placeholder: "例如 公佈欄", oninput: e => { m.labelZh = e.target.value; changed(); } }))),
         h("div", { class: "field menu-row__href" }, h("span", {}, "連結"),
           h("select", { "aria-label": "連到哪裡", onchange: e => { m.category = e.target.value; changed(); redraw(); } },
             h("option", { value: "" }, "自訂連結（下面填網址）"),

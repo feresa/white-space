@@ -135,11 +135,11 @@ const isDark = hex => {
 
 /* 首頁選單：每一項 = 圖示（設計稿切出來的線條向量圖，可不放）+ 文字 + 連結。沒有設定過就用這組預設 */
 const DEFAULT_MENU = [
-  { label: "Bulletin Board", image: "/assets/menu/icon-board.svg", href: "", category: "Bulletin Board" },
-  { label: "Teacher", image: "/assets/menu/icon-teacher.svg", href: "", category: "Teacher" },
-  { label: "Classroom Activities", image: "/assets/menu/icon-activities.svg", href: "", category: "Classroom Activities" },
-  { label: "Weekly diary", image: "/assets/menu/icon-diary.svg", href: "", category: "Weekly diary" },
-  { label: "Instagram", image: "/assets/menu/icon-instagram.svg", href: "", category: "" }
+  { label: "Bulletin Board", labelZh: "公佈欄", image: "/assets/menu/icon-board.svg", href: "", category: "Bulletin Board" },
+  { label: "Teacher", labelZh: "關於老師", image: "/assets/menu/icon-teacher.svg", href: "", category: "Teacher" },
+  { label: "Classroom Activities", labelZh: "課堂活動", image: "/assets/menu/icon-activities.svg", href: "", category: "Classroom Activities" },
+  { label: "Weekly diary", labelZh: "週記", image: "/assets/menu/icon-diary.svg", href: "", category: "Weekly diary" },
+  { label: "Instagram", labelZh: "IG小黑板", image: "/assets/menu/icon-instagram.svg", href: "", category: "" }
 ];
 /* 分類：每個分類有自己的網址 /c/<slug>；首頁顯示全部 */
 const DEFAULT_CATEGORIES = ["Bulletin Board", "Teacher", "Classroom Activities", "Weekly diary"];
@@ -148,6 +148,7 @@ const categoryUrl = name => `/c/${encodeURIComponent(slugOf(name))}`;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const validDate = d => DATE_RE.test(d || "") && !isNaN(Date.parse(d + "T00:00:00Z")) && new Date(d + "T00:00:00Z").toISOString().slice(0, 10) === d;
 // 舊版資料的轉換：舊的 icon 欄位、以及「整張選單圖（圖示+文字）」都換成現在的純圖示
+const ZH_LABEL = {"Bulletin Board": "公佈欄", "Teacher": "關於老師", "Classroom Activities": "課堂活動", "Weekly diary": "週記", "Instagram": "IG小黑板"};   // 文章結尾連結用的中文名稱（舊資料沒有時補上）
 const OLD_ICON_IMAGE = { board: "board", owl: "teacher", plane: "activities", book: "diary", instagram: "instagram" };
 const OLD_FULL_IMAGE = /^\/assets\/menu\/(board|teacher|activities|diary|instagram)\.svg$/;
 // 內建的選單圖示（SVG，只放在 assets/menu/）或上傳／內建的點陣圖；上傳區不收 SVG
@@ -164,6 +165,7 @@ function cleanMenu(list, categories) {
     if (full) image = `/assets/menu/icon-${full[1]}.svg`;
     return {
       label: str(m.label, 40),
+      labelZh: str(typeof m.labelZh === "string" ? m.labelZh : (ZH_LABEL[m.label] || ""), 40),
       image: MENU_IMG_RE.test(image) ? image : "",
       href: HREF_RE.test(href) ? href : "",
       category: categories.includes(m.category) ? m.category : ""      // 有選分類的話，連結就是那個分類頁
