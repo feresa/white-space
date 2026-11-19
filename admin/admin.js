@@ -347,7 +347,8 @@
       h("div", { class: "view__head" },
         h("h1", {}, "卡片"),
         h("button", { class: "btn btn--primary", type: "button", onclick: () => {
-          const it = { id: uid(), tag: (doc.site.categories || [])[0] || "", title: "新的卡片", summary: "", text: "", images: [], figure: null, date: today(), published: false };
+          const firstOnHome = (doc.site.categories || []).find(c => !(doc.site.homeHidden || []).includes(c));   // 預設放在會顯示在首頁的分類
+          const it = { id: uid(), tag: firstOnHome || (doc.site.categories || [])[0] || "", title: "新的卡片", summary: "", text: "", images: [], figure: null, date: today(), published: false };
           doc.items.unshift(it); changed();
           location.hash = `#cards/${it.id}`;
         } }, "＋ 新增卡片")),
