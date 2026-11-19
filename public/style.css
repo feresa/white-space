@@ -305,14 +305,9 @@ main {
 }
 .modal__text { font-size: 17px; line-height: 2.1; letter-spacing: .12em; }
 .modal__text p { margin: 0 0 1.4em; }
-.modal__last { display: flex; align-items: flex-start; gap: 40px; }   /* 最後一段＋內文小圖並排 */
+.modal__last { display: flex; align-items: flex-start; gap: 40px; }   /* 最後一段＋結尾小青蛙並排 */
 .modal__last p { margin: 0; }
-.modal__figure { flex: none; width: 150px; aspect-ratio: 1; margin: -10px 0 0; overflow: hidden; background: var(--placeholder); }
-.modal__figure img { width: 100%; height: 100%; object-fit: cover; transform: scale(var(--z, 1)); }
-
-.modal__more { display: grid; gap: var(--s3); width: min(73%, 1065px); margin: 0 auto; padding-bottom: var(--s3); }
-.modal__more figure { margin: 0; }
-.modal__more img { display: block; width: 100%; height: auto; }
+.modal__frog { flex: none; width: 114px; height: auto; margin-top: 8px; }
 
 /* 底部：圓鈕列、細線、版權 */
 .modal__foot { flex: none; padding: 14px 10.3% 18px; background: #fff; }
@@ -358,7 +353,7 @@ main {
   .modal__title { margin-bottom: 24px; letter-spacing: .06em; }
   .modal__text { font-size: 15px; line-height: 1.95; letter-spacing: .06em; }
   .modal__last { flex-wrap: wrap; gap: 16px; }
-  .modal__figure { width: 120px; margin: 0; }
+  .modal__frog { width: 90px; margin: 0; }
   .modal__foot { padding: 10px 16px; padding-bottom: max(10px, env(safe-area-inset-bottom)); }
   .modal__actions { padding: 0 0 10px; gap: 12px; }
   .circle-btn { width: 40px; height: 40px; }

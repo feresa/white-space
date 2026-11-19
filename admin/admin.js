@@ -262,13 +262,10 @@
       const move = d => { const j = i + d; [entry.images[i], entry.images[j]] = [entry.images[j], entry.images[i]]; changed(); rerender(); };
       imgList.append(imageEditor(img, {
         kind: "card",
-        label: i === 0 ? (isAbout ? "第 1 張（最先顯示）" : "第 1 張・也是卡片縮圖") : `第 ${i + 1} 張`,
+        label: i === 0 ? "第 1 張・卡片縮圖＋文章大圖" : `第 ${i + 1} 張（目前不會顯示）`,
         buttons: [
           h("button", { class: "icon-btn", type: "button", "aria-label": "往前", disabled: i === 0, onclick: () => move(-1) }, icon(I.left)),
           h("button", { class: "icon-btn", type: "button", "aria-label": "往後", disabled: i === n - 1, onclick: () => move(1) }, icon(I.right)),
-          h("button", { class: "btn btn--sm", type: "button", onclick: () => {
-            entry.figure = { ...img, zoom: Math.max(img.zoom || 1, 1.6) }; changed(); rerender(); toast("已設為內文小圖");
-          } }, "設為內文小圖"),
           h("button", { class: "btn btn--sm btn--danger", type: "button", onclick: () => {
             entry.images.splice(i, 1); changed(); rerender();
           } }, "移除")
@@ -284,7 +281,7 @@
       } });
     const images = h("div", { class: "panel" },
       h("h2", {}, "大圖"),
-      h("p", { class: "hint" }, "第 1 張是文章最上方的滿版大圖（也是卡片縮圖），第 2 張起會接在文字後面，一張一張往下排。用 ← → 調整順序。"),
+      h("p", { class: "hint" }, "只會用到第 1 張：首頁卡片的縮圖，也是文章最上方的大圖。文章結尾固定是留白教室的小青蛙，不用另外放圖。"),
       imgList,
       h("div", { class: "add-row" },
         h("label", { class: "btn btn--primary" }, "上傳圖片", uploadInput),
@@ -292,27 +289,7 @@
           const img = await pickImage(); if (img) { entry.images.push(img); changed(); rerender(); }
         } }, "從圖庫選")));
 
-    /* 內文小圖 */
-    const figUpload = h("input", { type: "file", accept: "image/*", hidden: true,
-      onchange: async e => {
-        try { const [img] = await uploadFiles(e.target.files); if (img) { entry.figure = { ...img, zoom: 1 }; changed(); rerender(); } }
-        catch (err) { toast(err.message, true); }
-      } });
-    const figure = h("div", { class: "panel" },
-      h("h2", {}, "內文小圖"),
-      h("p", { class: "hint" }, "放在文字右邊的直式小圖，可以不放。"),
-      entry.figure
-        ? imageEditor(entry.figure, { kind: "figure", label: "顯示效果", buttons: [
-            h("button", { class: "btn btn--sm btn--danger", type: "button", onclick: () => { entry.figure = null; changed(); rerender(); } }, "移除小圖")
-          ] })
-        : h("p", { class: "empty" }, "沒有小圖"),
-      h("div", { class: "add-row" },
-        h("label", { class: "btn" }, entry.figure ? "換一張（上傳）" : "上傳小圖", figUpload),
-        h("button", { class: "btn", type: "button", onclick: async () => {
-          const img = await pickImage(); if (img) { entry.figure = img; changed(); rerender(); }
-        } }, "從圖庫選")));
-
-    return [fields, images, figure];
+    return [fields, images];
   }
 
   /* ---------- 卡片 ---------- */

@@ -108,36 +108,20 @@
     heroImg.parentElement.hidden = !imgs.length;
     if (imgs.length) { heroImg.src = imgs[0].src; heroImg.alt = imgs[0].alt || ""; }
 
-    /* 內文；有內文小圖的話，放在最後一段旁邊 */
+    /* 內文；結尾固定放留白教室的小青蛙（在最後一段旁邊），後面不再放其他圖 */
     textEl.innerHTML = "";
     const ps = paragraphs(item.text).map(t => { const p = document.createElement("p"); p.textContent = t; return p; });
-    let figure = null;
-    if (item.figure) {
-      figure = document.createElement("figure");
-      figure.className = "modal__figure";
-      const img = document.createElement("img");
-      applyImage(img, item.figure);
-      figure.append(img);
-    }
-    if (figure && ps.length) {
-      const last = ps.pop();
-      const row = document.createElement("div");
-      row.className = "modal__last";
-      row.append(last, figure);
-      textEl.append(...ps, row);
-    } else {
-      textEl.append(...ps);
-      if (figure) textEl.append(figure);
-    }
-
+    const frog = document.createElement("img");
+    frog.className = "modal__frog";
+    frog.src = "/assets/frog-end.png";
+    frog.alt = "";
+    frog.width = 114; frog.height = 138;
+    const row = document.createElement("div");
+    row.className = "modal__last";
+    if (ps.length) { textEl.append(...ps.slice(0, -1)); row.append(ps[ps.length - 1]); }
+    row.append(frog);
+    textEl.append(row);
     moreEl.innerHTML = "";
-    imgs.slice(1).forEach(im => {
-      const fig = document.createElement("figure");
-      const img = document.createElement("img");
-      img.src = im.src; img.alt = im.alt || ""; img.loading = "lazy"; img.decoding = "async";
-      fig.append(img);
-      moreEl.append(fig);
-    });
 
     scroller.scrollTop = 0;
   }
