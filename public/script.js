@@ -115,7 +115,7 @@
     frog.className = "modal__frog";
     frog.src = "/assets/frog-end.png";
     frog.alt = "";
-    frog.width = 114; frog.height = 138;
+    frog.width = 119; frog.height = 150;
     const row = document.createElement("div");
     row.className = "modal__last";
     if (ps.length) { textEl.append(...ps.slice(0, -1)); row.append(ps[ps.length - 1]); }
