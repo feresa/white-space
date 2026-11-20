@@ -43,6 +43,8 @@ ADMIN_PASSWORD=test-pass-123 DATA_DIR=/tmp/ws-data PORT=3100 node server.js
 - **分類**：Bulletin Board、Teacher、Classroom Activities、Weekly diary，網址 `/c/<slug>`。
   - Bulletin Board 的文章**不顯示在首頁**，只在自己的分類頁出現（後台「網站設定 → 顯示在首頁」可調）。
   - Instagram 選單連到 https://www.instagram.com/white_space_life（後台選單沒填連結時自動補上）。
+- **卡片**：標題下方只顯示「一行簡介」，不顯示分類。
+- **圖片**：上傳時記下原圖寬高（`w`/`h`），前台先留好比例的位置；超過 400KB 的 JPG/PNG/WebP 會在瀏覽器轉成 WebP。舊圖打開後台那篇文章、按儲存就會補上寬高。
 - **排序**：首頁和分類頁依文章「日期」由新到舊。
 - **文章視窗**：整頁白底（不是浮動紙張）。
   - 上方固定列：左 Logo（點了回首頁）、右兩顆圓形按鈕（下一篇、關閉），下方細線；捲動時固定。

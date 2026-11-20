@@ -84,11 +84,10 @@
       title.textContent = item.title;
 
       btn.append(media, title);
-      const meta = [item.tag, item.summary].filter(Boolean).join(" · ");
-      if (meta) {
+      if (item.summary) {                                  // 卡片只顯示簡介，不顯示分類
         const summary = document.createElement("span");
         summary.className = "card__summary";
-        summary.textContent = meta;
+        summary.textContent = item.summary;
         btn.append(summary);
       }
       li.append(btn);
@@ -121,7 +120,8 @@
         flip = !flip;
         const fig = document.createElement("figure");
         const img = document.createElement("img");
-        img.src = sec.image.src; img.alt = sec.image.alt || ""; img.loading = "lazy"; img.decoding = "async";
+        img.src = sec.image.src; img.alt = sec.image.alt || "";
+        if (sec.image.w) { img.width = sec.image.w; img.height = sec.image.h; }   // 先留好原圖比例的位置
         fig.append(img); box.append(fig);
       }
       const tx = document.createElement("div");
@@ -156,6 +156,7 @@
     imgs.forEach((d, i) => {
       const img = document.createElement("img");
       img.src = d.src; img.alt = d.alt || ""; img.decoding = "async";
+      if (d.w) { img.width = d.w; img.height = d.h; }
       slidesEl.append(img);
       const dot = document.createElement("button");
       dot.type = "button";

@@ -183,8 +183,36 @@ function cleanImage(img) {
     src: img.src,
     pos: POS_RE.test(img.pos || "") ? img.pos : "50% 50%",
     zoom: Math.min(4, Math.max(1, Math.round((Number(img.zoom) || 1) * 100) / 100)),
-    alt: str(img.alt, 200)
+    alt: str(img.alt, 200),
+    ...dims(img)
   };
+}
+/* 圖片原始寬高：讓前台先留好正確比例的位置（圖還沒載完也不會變形） */
+function dims(img) {
+  const w = Math.round(Number(img.w)), h = Math.round(Number(img.h));
+  return w > 0 && h > 0 && w <= 20000 && h <= 20000 ? { w, h } : {};
+}
+function imageSize(b) {
+  try {
+    if (b[0] === 0x89 && b[1] === 0x50) return { w: b.readUInt32BE(16), h: b.readUInt32BE(20) };                 // PNG
+    if (b[0] === 0x47 && b[1] === 0x49) return { w: b.readUInt16LE(6), h: b.readUInt16LE(8) };                   // GIF
+    if (b.toString("ascii", 0, 4) === "RIFF" && b.toString("ascii", 8, 12) === "WEBP") {                         // WebP
+      const t = b.toString("ascii", 12, 16);
+      if (t === "VP8X") return { w: 1 + b.readUIntLE(24, 3), h: 1 + b.readUIntLE(27, 3) };
+      if (t === "VP8L") { const n = b.readUInt32LE(21); return { w: (n & 0x3fff) + 1, h: ((n >> 14) & 0x3fff) + 1 }; }
+      if (t === "VP8 ") return { w: b.readUInt16LE(26) & 0x3fff, h: b.readUInt16LE(28) & 0x3fff };
+    }
+    if (b[0] === 0xff && b[1] === 0xd8) {                                                                          // JPEG
+      let i = 2;
+      while (i + 9 < b.length) {
+        if (b[i] !== 0xff) { i++; continue; }
+        const m = b[i + 1];
+        if (m >= 0xc0 && m <= 0xcf && m !== 0xc4 && m !== 0xc8 && m !== 0xcc) return { w: b.readUInt16BE(i + 7), h: b.readUInt16BE(i + 5) };
+        i += 2 + b.readUInt16BE(i + 2);
+      }
+    }
+  } catch {}
+  return {};
 }
 function cleanImages(list) {
   return (Array.isArray(list) ? list : []).map(cleanImage).filter(Boolean).slice(0, 12);
@@ -439,7 +467,7 @@ api.post("/upload", upload.array("files", 12), wrap(async (req, res) => {
     if (!kind) continue;
     const name = `${Date.now().toString(36)}-${crypto.randomBytes(4).toString("hex")}.${kind.ext}`;
     await store.putUpload(name, f.buffer, MIME[kind.ext]);
-    saved.push({ src: `/uploads/${name}`, name: f.originalname });
+    saved.push({ src: `/uploads/${name}`, name: f.originalname, ...dims(imageSize(f.buffer)) });
   }
   if (!saved.length) return res.status(400).json({ error: "只接受 JPG / PNG / WebP / GIF / AVIF 圖片" });
   res.json({ files: saved });
