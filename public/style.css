@@ -366,11 +366,11 @@ main {
   .modal__sec--img { grid-template-columns: calc(var(--pw) * 400 / 1152) 1fr; gap: calc(var(--pw) * 68 / 1152); }
   .modal__sec--flip { grid-template-columns: 1fr calc(var(--pw) * 400 / 1152); }
   .modal__footer { max-width: var(--pw); }
-  /* 結尾：青蛙 89 寬（距內文左緣 18）、連結字 13.5 */
-  .modal__end { max-width: calc(var(--pw) * 1000 / 1152); gap: calc(var(--pw) * 35 / 1152); padding-bottom: calc(var(--pw) * 50 / 1152); }
-  .modal__frog { width: calc(var(--pw) * 89 / 1152); margin-left: calc(var(--pw) * 18 / 1152); }
-  .modal__links { font-size: max(12px, calc(var(--pw) * 13.5 / 1152)); line-height: 1.3; letter-spacing: .05em; gap: 6px calc(var(--pw) * 24 / 1152); margin-bottom: calc(var(--pw) * 16 / 1152); }
-  .modal__links a, .modal__links span { padding-left: calc(var(--pw) * 10 / 1152); }
+  /* 結尾：青蛙 89 寬（距內文左緣 12）、連結字 16 */
+  .modal__end { max-width: calc(var(--pw) * 1000 / 1152); gap: calc(var(--pw) * 22.5 / 1152); padding-bottom: calc(var(--pw) * 50 / 1152); }
+  .modal__frog { width: calc(var(--pw) * 89 / 1152); margin-left: calc(var(--pw) * 12 / 1152); }
+  .modal__links { font-size: max(13px, calc(var(--pw) * 16 / 1152)); line-height: 1.3; letter-spacing: .06em; gap: 6px calc(var(--pw) * 27 / 1152); margin-bottom: calc(var(--pw) * 16 / 1152); }
+  .modal__links a, .modal__links span { padding-left: calc(var(--pw) * 11 / 1152); }
 }
 
 /* 圓鈕（圖形照設計稿畫的正圓） */
@@ -398,10 +398,11 @@ main {
   .modal__text { font-size: 15px; line-height: 1.95; letter-spacing: .1em; }
   .modal__end { padding: 56px 22px 36px; }
   /* 手機：照設計稿（435 寬）量的比例，全部用螢幕寬度換算 —— 青蛙在左，連結分上下兩行、跟青蛙垂直置中 */
-  .modal__end { padding-left: 9.7vw; padding-right: 4vw; gap: 3.84vw; align-items: center; justify-content: flex-start; }
-  .modal__frog { width: 12.55vw; margin: 0; }
-  .modal__links { flex-wrap: wrap; font-size: 2.42vw; line-height: 1.5; gap: 1.2vw 3.8vw; margin: 0; letter-spacing: .02em; }   /* 換行元素自己佔一行，上下各算一次間距 */
-  .modal__links a, .modal__links span { padding-left: 1.6vw; }
+  .modal__end { padding-left: 8.1vw; padding-right: 4vw; gap: 5.38vw; align-items: flex-end; justify-content: flex-start; }
+  .modal__frog { width: 14.8vw; margin: 0; }
+  .modal__links { flex-wrap: wrap; font-size: 3.13vw; line-height: 1.5; gap: .64vw 4.94vw; margin: 0 0 1.85vw; letter-spacing: 0; }   /* 換行元素自己佔一行，上下各算一次間距 */
+  .modal__links a, .modal__links span { padding-left: 2.07vw; }
+  .modal__links a::before, .modal__links span::before { top: .3em; bottom: .3em; }   /* 直線跟字一樣高 */
   .modal__br { display: block; flex-basis: 100%; height: 0; }
   .modal__footer { padding: 14px 0 22px; font-size: 12px; padding-bottom: max(22px, env(safe-area-inset-bottom)); }
 }
