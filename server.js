@@ -192,7 +192,12 @@ function cleanEntry(e, categories) {
     title: str(e.title, 120),
     text: str(e.text, 20000),
     images: cleanImages(e.images),
-    figure: cleanImage(e.figure)
+    figure: cleanImage(e.figure),
+    // 內容區塊：一張圖＋一段文字；電腦版圖文左右交錯，手機版圖在上文字在下
+    sections: (Array.isArray(e.sections) ? e.sections : []).slice(0, 40).map(x => ({
+      image: cleanImage(x && x.image),
+      text: str(x && x.text, 5000)
+    })).filter(x => x.image || x.text)
   };
 }
 function cleanContent(input) {

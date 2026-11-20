@@ -289,7 +289,43 @@
           const img = await pickImage(); if (img) { entry.images.push(img); changed(); rerender(); }
         } }, "從圖庫選")));
 
-    return [fields, images];
+    /* 內容區塊：一張圖＋一段文字 */
+    entry.sections = entry.sections || [];
+    const secList = h("div", { class: "sec-list" });
+    entry.sections.forEach((sec, i) => {
+      const n = entry.sections.length;
+      const move = d => { const j = i + d; [entry.sections[i], entry.sections[j]] = [entry.sections[j], entry.sections[i]]; changed(); rerender(); };
+      const up = h("input", { type: "file", accept: "image/*", hidden: true,
+        onchange: async e => { try { const [img] = await uploadFiles(e.target.files); if (img) { sec.image = img; changed(); rerender(); } } catch (err) { toast(err.message, true); } } });
+      secList.append(h("div", { class: "sec-row" },
+        h("div", { class: "sec-row__img" },
+          h("div", { class: "sec-thumb" }, sec.image ? h("img", { src: sec.image.src, alt: "" }) : h("em", {}, "沒有圖（整段文字）")),
+          h("div", { class: "menu-row__imgbtns" },
+            h("label", { class: "btn btn--sm" }, sec.image ? "換圖" : "上傳", up),
+            h("button", { class: "btn btn--sm", type: "button", onclick: async () => { const img = await pickImage(); if (img) { sec.image = img; changed(); rerender(); } } }, "圖庫"),
+            sec.image && h("button", { class: "btn btn--sm btn--danger", type: "button", onclick: () => { sec.image = null; changed(); rerender(); } }, "拿掉圖"))),
+        h("label", { class: "field sec-row__text" }, h("span", {}, `第 ${i + 1} 段文字`),
+          h("textarea", { maxlength: "5000", style: "min-height:140px", oninput: e => { sec.text = e.target.value; changed(); } }, sec.text || "")),
+        h("div", { class: "menu-row__btns" },
+          h("button", { class: "icon-btn", type: "button", "aria-label": "往上", disabled: i === 0, onclick: () => move(-1) }, icon(I.up)),
+          h("button", { class: "icon-btn", type: "button", "aria-label": "往下", disabled: i === n - 1, onclick: () => move(1) }, icon(I.down)),
+          h("button", { class: "icon-btn", type: "button", "aria-label": "刪除這個區塊", onclick: () => { if (confirm("刪除這個區塊？")) { entry.sections.splice(i, 1); changed(); rerender(); } } }, icon(I.trash)))));
+    });
+    if (!entry.sections.length) secList.append(h("p", { class: "empty" }, "還沒有內容區塊"));
+    const multiUp = h("input", { type: "file", accept: "image/*", multiple: true, hidden: true,
+      onchange: async e => {
+        try { const imgs = await uploadFiles(e.target.files); entry.sections.push(...imgs.map(img => ({ image: img, text: "" }))); changed(); rerender(); }
+        catch (err) { toast(err.message, true); }
+      } });
+    const sections = !isAbout && h("div", { class: "panel" },
+      h("h2", {}, "內容區塊（圖片＋文字）"),
+      h("p", { class: "hint" }, "接在前面的內文後面。每一塊放一張圖和一段文字：電腦版圖文左右交錯（第 1 塊圖在左、第 2 塊圖在右…），手機版圖在上、文字在下。沒放圖的區塊就是整段文字。\n「一次上傳多張照片」會每張照片各建一個區塊，再補上文字就好。"),
+      secList,
+      h("div", { class: "add-row" },
+        h("label", { class: "btn btn--primary" }, "一次上傳多張照片", multiUp),
+        h("button", { class: "btn", type: "button", onclick: () => { entry.sections.push({ image: null, text: "" }); changed(); rerender(); } }, "＋ 新增區塊")));
+
+    return [fields, images, sections].filter(Boolean);
   }
 
   /* ---------- 卡片 ---------- */

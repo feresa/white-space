@@ -308,6 +308,26 @@ main {
 .modal__text p { margin: 0 0 1.4em; }
 .modal__text p:last-child { margin-bottom: 0; }
 
+/* 內容區塊：圖 400 寬＋文字，左右交錯（設計稿：圖 482–882、文字 950–1435） */
+.modal__sections:not(:empty) { margin-top: 60px; display: grid; gap: 60px; }
+.modal__sec--img { display: grid; grid-template-columns: 400px 1fr; gap: 68px; align-items: center; }
+.modal__sec--flip { grid-template-columns: 1fr 400px; }
+.modal__sec--flip figure { order: 2; }
+.modal__sec figure { margin: 0; background: var(--placeholder); }
+.modal__sec figure img { display: block; width: 100%; height: auto; }
+.modal__sec-text { font-size: 17px; line-height: 2.1; letter-spacing: .12em; }
+.modal__sec-text p { margin: 0 0 1.4em; }
+.modal__sec-text p:last-child { margin-bottom: 0; }
+@media (max-width: 900px) {                                       /* 平板、手機：圖在上（置中）、文字在下 */
+  .modal__sec--img, .modal__sec--flip { grid-template-columns: 1fr; gap: 28px; }
+  .modal__sec--flip figure { order: 0; }
+  .modal__sec figure { width: min(64%, 400px); justify-self: center; }
+}
+@media (max-width: 640px) {
+  .modal__sections:not(:empty) { margin-top: 36px; gap: 40px; }
+  .modal__sec-text { font-size: 15px; line-height: 1.95; letter-spacing: .1em; }
+}
+
 /* 結尾：小青蛙＋分類連結 */
 .modal__end { max-width: 1000px; margin: 0 auto; padding: 95px 24px 64px; display: flex; align-items: flex-end; gap: 32px; }
 .modal__frog { flex: none; width: 119px; height: auto; margin-left: 2px; }

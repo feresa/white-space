@@ -15,6 +15,7 @@
   const tagEl = document.getElementById("modal-tag");
   const titleEl = document.getElementById("modal-title");
   const textEl = document.getElementById("modal-text");
+  const secsEl = document.getElementById("modal-sections");
   const nextBtn = modal.querySelector("[data-next]");
   const linksEl = document.getElementById("modal-links");
   const toTop = document.querySelector(".to-top");
@@ -108,6 +109,28 @@
     /* 內文（結尾的小青蛙和分類連結是固定的，寫在 HTML 裡） */
     textEl.innerHTML = "";
     textEl.append(...paragraphs(item.text).map(t => { const p = document.createElement("p"); p.textContent = t; return p; }));
+
+    /* 內容區塊：有圖的區塊左右交錯（圖左文右 → 文左圖右 …），沒圖的就是整段文字 */
+    secsEl.innerHTML = "";
+    let flip = false;
+    (item.sections || []).forEach(sec => {
+      const box = document.createElement("section");
+      box.className = "modal__sec";
+      if (sec.image) {
+        box.classList.add("modal__sec--img");
+        if (flip) box.classList.add("modal__sec--flip");
+        flip = !flip;
+        const fig = document.createElement("figure");
+        const img = document.createElement("img");
+        img.src = sec.image.src; img.alt = sec.image.alt || ""; img.loading = "lazy"; img.decoding = "async";
+        fig.append(img); box.append(fig);
+      }
+      const tx = document.createElement("div");
+      tx.className = "modal__sec-text";
+      tx.append(...paragraphs(sec.text).map(t => { const p = document.createElement("p"); p.textContent = t; return p; }));
+      if (sec.text) box.append(tx);
+      secsEl.append(box);
+    });
 
     scroller.scrollTop = 0;
   }
