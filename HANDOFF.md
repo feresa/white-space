@@ -7,9 +7,8 @@
 - 線上網址：https://white-space-eight.vercel.app/
 - 後台：https://white-space-eight.vercel.app/admin/
 - GitHub：`feresa/white-space`
-- 工作分支：`claude/funny-franklin-njhmmf`
-  - Vercel 的 Production Branch 目前設定為這個分支，推上去就會自動部署正式網站。
-  - `main` 只合併到 PR #1，之後的修改都還在這個分支，尚未合併。
+- 正式分支：`main`（Vercel 的 Production Branch 已設為 `main`，合併進 `main` 就會自動部署正式網站）
+- 開發分支：`claude/funny-franklin-njhmmf`，改完開 PR 合併到 `main`
 - Vercel 專案：`white-space`（團隊 `feresas-projects`）
 
 ## 技術架構
@@ -58,10 +57,9 @@ ADMIN_PASSWORD=test-pass-123 DATA_DIR=/tmp/ws-data PORT=3100 node server.js
 
 - 回覆用繁體中文，簡潔、口語。
 - 使用者是設計導向，會給設計稿截圖要求「完全照做」：先量比例再改，改完截圖並排比對。
-- 每次修改：本機測試 → commit → push 到工作分支 → 確認 Vercel 部署完成 → 回報線上網址。
+- 每次修改：本機測試 → commit → push 到開發分支 → 開 PR 合併到 `main` → 確認 Vercel 部署完成 → 回報線上網址。
 
 ## 待辦／可能的下一步
 
-- 把工作分支合併回 `main`（開 PR），並把 Vercel Production Branch 改成 `main`。
 - Instagram 選單填上實際連結。
 - Teacher、Bulletin Board 分類目前沒有文章。
