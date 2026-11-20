@@ -9,6 +9,11 @@
   let canChangePassword = true;
 
   /* ---------- 小工具 ---------- */
+  /* 長文字框：跟著內容自動長高，寫長文不用在小框裡捲 */
+  function grow(t) { t.style.height = "auto"; t.style.height = `${t.scrollHeight + 2}px`; }
+  function growAll(root) { root.querySelectorAll("textarea.long").forEach(grow); }
+  document.addEventListener("input", e => { if (e.target.matches && e.target.matches("textarea.long")) grow(e.target); });
+
   function h(tag, attrs = {}, ...kids) {
     const el = document.createElement(tag);
     for (const [k, v] of Object.entries(attrs)) {
@@ -244,8 +249,8 @@
       !isAbout && h("label", { class: "field" }, h("span", {}, "一行簡介（卡片標題下方）"),
         h("input", { type: "text", value: entry.summary || "", maxlength: "200",
           oninput: e => { entry.summary = e.target.value; changed(); } })),
-      h("label", { class: "field" }, h("span", {}, "內文"),
-        h("textarea", { maxlength: "20000",
+      h("label", { class: "field" }, h("span", {}, isAbout ? "內文" : "文章內文（大圖下方、標題之後的文章）"),
+        h("textarea", { maxlength: "20000", class: "long",
           oninput: e => { entry.text = e.target.value; changed(); count.textContent = `${paraCount(entry.text)} 段`; } }, entry.text || ""),
         (() => { var c = h("small", {}); return c; })())
     );
@@ -262,7 +267,7 @@
       const move = d => { const j = i + d; [entry.images[i], entry.images[j]] = [entry.images[j], entry.images[i]]; changed(); rerender(); };
       imgList.append(imageEditor(img, {
         kind: "card",
-        label: i === 0 ? "第 1 張・卡片縮圖＋文章大圖" : `第 ${i + 1} 張（目前不會顯示）`,
+        label: i === 0 ? "第 1 張・卡片縮圖＋文章大圖" : `第 ${i + 1} 張・大圖輪播`,
         buttons: [
           h("button", { class: "icon-btn", type: "button", "aria-label": "往前", disabled: i === 0, onclick: () => move(-1) }, icon(I.left)),
           h("button", { class: "icon-btn", type: "button", "aria-label": "往後", disabled: i === n - 1, onclick: () => move(1) }, icon(I.right)),
@@ -281,7 +286,7 @@
       } });
     const images = h("div", { class: "panel" },
       h("h2", {}, "大圖"),
-      h("p", { class: "hint" }, "只會用到第 1 張：首頁卡片的縮圖，也是文章最上方的大圖。文章結尾固定是留白教室的小青蛙，不用另外放圖。"),
+      h("p", { class: "hint" }, "第 1 張是首頁卡片的縮圖，也是文章最上方的大圖。放 2 張以上，文章最上方會自動輪流播放（約 4.5 秒換一張，手機可左右滑）。文章結尾固定是留白教室的小青蛙，不用另外放圖。"),
       imgList,
       h("div", { class: "add-row" },
         h("label", { class: "btn btn--primary" }, "上傳圖片", uploadInput),
@@ -304,8 +309,8 @@
             h("label", { class: "btn btn--sm" }, sec.image ? "換圖" : "上傳", up),
             h("button", { class: "btn btn--sm", type: "button", onclick: async () => { const img = await pickImage(); if (img) { sec.image = img; changed(); rerender(); } } }, "圖庫"),
             sec.image && h("button", { class: "btn btn--sm btn--danger", type: "button", onclick: () => { sec.image = null; changed(); rerender(); } }, "拿掉圖"))),
-        h("label", { class: "field sec-row__text" }, h("span", {}, `第 ${i + 1} 段文字`),
-          h("textarea", { maxlength: "5000", style: "min-height:140px", oninput: e => { sec.text = e.target.value; changed(); } }, sec.text || "")),
+        h("label", { class: "field sec-row__text" }, h("span", {}, `第 ${i + 1} 塊的文字（空一行就是新的一段）`),
+          h("textarea", { maxlength: "10000", class: "long", oninput: e => { sec.text = e.target.value; changed(); } }, sec.text || "")),
         h("div", { class: "menu-row__btns" },
           h("button", { class: "icon-btn", type: "button", "aria-label": "往上", disabled: i === 0, onclick: () => move(-1) }, icon(I.up)),
           h("button", { class: "icon-btn", type: "button", "aria-label": "往下", disabled: i === n - 1, onclick: () => move(1) }, icon(I.down)),
@@ -384,6 +389,7 @@
           doc.items = doc.items.filter(x => x !== it); changed(); location.hash = "#cards";
         } }, icon(I.trash), "刪除這張卡片"))
     );
+    growAll(view);
     // 標題即時更新到頁首
     view.querySelector(".panel input").addEventListener("input", e => { view.querySelector(".view__head h1").textContent = e.target.value || "（未命名）"; });
   }
@@ -395,6 +401,7 @@
       h("div", { class: "view__head" }, h("h1", {}, "關於")),
       ...entryEditor(doc.about, { isAbout: true, rerender })
     );
+    growAll(view);
   }
 
   /* ---------- 網站設定 ---------- */

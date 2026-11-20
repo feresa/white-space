@@ -11,7 +11,9 @@
   const grid = document.getElementById("grid");
   const modal = document.getElementById("modal");
   const scroller = modal.querySelector(".modal__scroll");
-  const heroImg = document.getElementById("modal-hero");
+  const hero = document.getElementById("modal-hero");
+  const slidesEl = hero.querySelector(".modal__slides");
+  const dotsEl = hero.querySelector(".modal__dots");
   const tagEl = document.getElementById("modal-tag");
   const titleEl = document.getElementById("modal-title");
   const textEl = document.getElementById("modal-text");
@@ -100,11 +102,8 @@
     tagEl.hidden = !item.tag;
     titleEl.textContent = item.title;
 
-    /* 只用第一張圖：上方大圖，完整顯示原圖比例 */
-    const imgs = item.images || [];
-    heroImg.removeAttribute("src");
-    heroImg.parentElement.hidden = !imgs.length;
-    if (imgs.length) { heroImg.src = imgs[0].src; heroImg.alt = imgs[0].alt || ""; }
+    /* 上方大圖：完整顯示原圖比例；有多張就輪流播放 */
+    setSlides(item.images || []);
 
     /* 內文（結尾的小青蛙和分類連結是固定的，寫在 HTML 裡） */
     textEl.innerHTML = "";
@@ -134,6 +133,49 @@
 
     scroller.scrollTop = 0;
   }
+
+  /* ---------- 大圖輪播 ---------- */
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let slide = 0, timer = null;
+  function showSlide(n) {
+    const imgs = slidesEl.children;
+    if (!imgs.length) return;
+    slide = (n + imgs.length) % imgs.length;
+    [...imgs].forEach((im, i) => { im.classList.toggle("is-on", i === slide); im.setAttribute("aria-hidden", i !== slide); });
+    [...dotsEl.children].forEach((d, i) => d.setAttribute("aria-current", i === slide));
+  }
+  function stopAuto() { clearInterval(timer); timer = null; }
+  function startAuto() {
+    stopAuto();
+    if (!reduceMotion && slidesEl.children.length > 1) timer = setInterval(() => showSlide(slide + 1), 4500);
+  }
+  function setSlides(imgs) {
+    stopAuto();
+    slidesEl.innerHTML = ""; dotsEl.innerHTML = "";
+    hero.hidden = !imgs.length;
+    imgs.forEach((d, i) => {
+      const img = document.createElement("img");
+      img.src = d.src; img.alt = d.alt || ""; img.decoding = "async";
+      slidesEl.append(img);
+      const dot = document.createElement("button");
+      dot.type = "button";
+      dot.setAttribute("aria-label", `第 ${i + 1} 張圖`);
+      dot.addEventListener("click", () => { showSlide(i); startAuto(); });
+      dotsEl.append(dot);
+    });
+    dotsEl.hidden = imgs.length < 2;
+    showSlide(0);
+    startAuto();
+  }
+  // 大圖上左右滑動：換圖（不換篇）
+  let hx = null, hy = null;
+  hero.addEventListener("touchstart", e => { hx = e.touches[0].clientX; hy = e.touches[0].clientY; }, { passive: true });
+  hero.addEventListener("touchend", e => {
+    if (hx === null || slidesEl.children.length < 2) return;
+    const dx = e.changedTouches[0].clientX - hx, dy = e.changedTouches[0].clientY - hy;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) { e.stopPropagation(); showSlide(slide + (dx < 0 ? 1 : -1)); startAuto(); }
+    hx = hy = null;
+  });
 
   /* 結尾的分類連結（用選單設定；文字用中文名稱） */
   const slugOf = name => String(name).trim().toLowerCase().replace(/\s+/g, "-");
@@ -177,6 +219,7 @@
 
   modal.addEventListener("close", () => {
     document.body.classList.remove("modal-open");
+    stopAuto();
     current = -1;
     if (pushed) { pushed = false; history.back(); }      // 收回打開時多記的那一筆
     else if (location.hash.startsWith("#p=")) setHash("");
