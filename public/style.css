@@ -355,6 +355,24 @@ main {
 
 .modal__footer { max-width: 1152px; margin: 0 auto; padding: 16px 0 28px; border-top: 1px solid var(--ink); text-align: center; font-size: 14px; color: var(--ink-soft); }
 
+/* 電腦版：不滿版，照設計稿（1920 寬時內容 1152、左右各留 384）等比例縮放
+   --pw = 內容寬；其他尺寸都用「設計稿數值 × pw / 1152」換算 */
+@media (min-width: 1001px) {
+  .modal { --pw: min(1152px, 60vw); }
+  .modal__head { max-width: var(--pw); padding: calc(var(--pw) * 60 / 1152) calc(var(--pw) * 66 / 1152) 15px calc(var(--pw) * 50 / 1152); }
+  .modal__logo img { height: calc(var(--pw) * 111 / 1152); }
+  .modal__hero { width: calc(var(--pw) * 1065 / 1152); }
+  .modal__body { max-width: calc(var(--pw) * 1000 / 1152); }
+  .modal__sec--img { grid-template-columns: calc(var(--pw) * 400 / 1152) 1fr; gap: calc(var(--pw) * 68 / 1152); }
+  .modal__sec--flip { grid-template-columns: 1fr calc(var(--pw) * 400 / 1152); }
+  .modal__footer { max-width: var(--pw); }
+  /* 結尾：青蛙 89 寬（距內文左緣 18）、連結字 13.5 */
+  .modal__end { max-width: calc(var(--pw) * 1000 / 1152); gap: calc(var(--pw) * 35 / 1152); padding-bottom: calc(var(--pw) * 50 / 1152); }
+  .modal__frog { width: calc(var(--pw) * 89 / 1152); margin-left: calc(var(--pw) * 18 / 1152); }
+  .modal__links { font-size: max(12px, calc(var(--pw) * 13.5 / 1152)); line-height: 1.3; letter-spacing: .05em; gap: 6px calc(var(--pw) * 24 / 1152); margin-bottom: calc(var(--pw) * 16 / 1152); }
+  .modal__links a, .modal__links span { padding-left: calc(var(--pw) * 10 / 1152); }
+}
+
 /* 圓鈕（圖形照設計稿畫的正圓） */
 .circle-btn { width: 43px; height: 43px; display: block; padding: 0; border: 0; background: none; color: var(--ink); transition: opacity .15s, transform .15s var(--ease); }
 .circle-btn svg { display: block; width: 100%; height: 100%; }
