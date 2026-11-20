@@ -344,6 +344,12 @@ main {
 .modal__links a, .modal__links span { position: relative; padding-left: 12px; color: inherit; text-decoration: none; white-space: nowrap; }
 .modal__links a::before, .modal__links span::before { content: ""; position: absolute; left: 0; top: .15em; bottom: .15em; width: 1px; background: currentColor; }
 @media (hover: hover) { .modal__links a:hover { opacity: .55; } }
+@media (max-width: 760px) {             /* 平板、手機：跟電腦版同一個排法（青蛙＋一排連結），依螢幕寬度等比例縮小 */
+  .modal__end { gap: min(32px, 4vw); justify-content: center; }
+  .modal__frog { width: min(119px, 15.5vw); margin-left: 0; }
+  .modal__links { flex-wrap: nowrap; font-size: min(18px, 2.8vw); gap: 0 min(28px, 2.4vw); margin-bottom: min(8px, 1.2vw); letter-spacing: .06em; }
+  .modal__links a, .modal__links span { padding-left: min(12px, 1.6vw); }
+}
 
 .modal__footer { max-width: 1152px; margin: 0 auto; padding: 16px 0 28px; border-top: 1px solid var(--ink); text-align: center; font-size: 14px; color: var(--ink-soft); }
 
@@ -370,9 +376,7 @@ main {
   .modal__body { padding: 32px 22px 0; }
   .modal__title { margin-bottom: 24px; letter-spacing: .08em; }
   .modal__text { font-size: 15px; line-height: 1.95; letter-spacing: .1em; }
-  .modal__end { padding: 56px 22px 36px; gap: 16px; }
-  .modal__frog { width: 92px; }
-  .modal__links { font-size: 14px; gap: 10px 14px; margin-bottom: 4px; letter-spacing: .1em; }
+  .modal__end { padding: 56px 22px 36px; }
   .modal__footer { padding: 14px 0 22px; font-size: 12px; padding-bottom: max(22px, env(safe-area-inset-bottom)); }
 }
 
