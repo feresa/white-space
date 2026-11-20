@@ -379,11 +379,11 @@ main {
   .modal__title { margin-bottom: 24px; letter-spacing: .08em; }
   .modal__text { font-size: 15px; line-height: 1.95; letter-spacing: .1em; }
   .modal__end { padding: 56px 22px 36px; }
-  /* 手機：連結分上下兩行（公佈欄、關於老師／課堂活動、週記、IG小黑板），以 390 寬的畫面為準等比例縮放 */
-  .modal__end { gap: 4.1vw; justify-content: flex-start; }
-  .modal__frog { width: 23.5vw; }
-  .modal__links { flex-wrap: wrap; font-size: 3.6vw; gap: 3.2vw 3.6vw; margin-bottom: 1vw; letter-spacing: .1em; }
-  .modal__links a, .modal__links span { padding-left: 2.6vw; }
+  /* 手機：照設計稿（435 寬）量的比例，全部用螢幕寬度換算 —— 青蛙在左，連結分上下兩行、跟青蛙垂直置中 */
+  .modal__end { padding-left: 9.7vw; padding-right: 4vw; gap: 3.84vw; align-items: center; justify-content: flex-start; }
+  .modal__frog { width: 12.55vw; margin: 0; }
+  .modal__links { flex-wrap: wrap; font-size: 2.42vw; line-height: 1.5; gap: 1.2vw 3.8vw; margin: 0; letter-spacing: .02em; }   /* 換行元素自己佔一行，上下各算一次間距 */
+  .modal__links a, .modal__links span { padding-left: 1.6vw; }
   .modal__br { display: block; flex-basis: 100%; height: 0; }
   .modal__footer { padding: 14px 0 22px; font-size: 12px; padding-bottom: max(22px, env(safe-area-inset-bottom)); }
 }
