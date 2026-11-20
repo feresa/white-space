@@ -314,6 +314,7 @@ main {
 .modal__tag { margin: 0 0 6px; font-size: 13px; letter-spacing: .15em; color: var(--ink-soft); }
 .modal__title { margin: 0 0 42px; font-weight: 700; font-size: clamp(24px, 2.4vw, 32px); line-height: 1.35; letter-spacing: .1em; text-wrap: balance; }
 .modal__text { font-size: 17px; line-height: 2.1; letter-spacing: .12em; }
+.modal__text p, .modal__sec-text p { white-space: pre-line; }   /* 保留單行換行 */
 .modal__text p { margin: 0 0 1.4em; }
 .modal__text p:last-child { margin-bottom: 0; }
 
