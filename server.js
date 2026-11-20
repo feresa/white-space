@@ -139,7 +139,7 @@ const DEFAULT_MENU = [
   { label: "Teacher", labelZh: "關於老師", image: "/assets/menu/icon-teacher.svg", href: "", category: "Teacher" },
   { label: "Classroom Activities", labelZh: "課堂活動", image: "/assets/menu/icon-activities.svg", href: "", category: "Classroom Activities" },
   { label: "Weekly diary", labelZh: "週記", image: "/assets/menu/icon-diary.svg", href: "", category: "Weekly diary" },
-  { label: "Instagram", labelZh: "IG小黑板", image: "/assets/menu/icon-instagram.svg", href: "", category: "" }
+  { label: "Instagram", labelZh: "IG小黑板", image: "/assets/menu/icon-instagram.svg", href: "https://www.instagram.com/white_space_life", category: "" }
 ];
 /* 分類：每個分類有自己的網址 /c/<slug>；首頁顯示全部 */
 const DEFAULT_CATEGORIES = ["Bulletin Board", "Teacher", "Classroom Activities", "Weekly diary"];
@@ -148,6 +148,7 @@ const categoryUrl = name => `/c/${encodeURIComponent(slugOf(name))}`;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const validDate = d => DATE_RE.test(d || "") && !isNaN(Date.parse(d + "T00:00:00Z")) && new Date(d + "T00:00:00Z").toISOString().slice(0, 10) === d;
 // 舊版資料的轉換：舊的 icon 欄位、以及「整張選單圖（圖示+文字）」都換成現在的純圖示
+const IG_URL = "https://www.instagram.com/white_space_life";
 const ZH_LABEL = {"Bulletin Board": "公佈欄", "Teacher": "關於老師", "Classroom Activities": "課堂活動", "Weekly diary": "週記", "Instagram": "IG小黑板"};   // 文章結尾連結用的中文名稱（舊資料沒有時補上）
 const OLD_ICON_IMAGE = { board: "board", owl: "teacher", plane: "activities", book: "diary", instagram: "instagram" };
 const OLD_FULL_IMAGE = /^\/assets\/menu\/(board|teacher|activities|diary|instagram)\.svg$/;
@@ -158,7 +159,8 @@ function cleanMenu(list, categories) {
   if (!Array.isArray(list)) return DEFAULT_MENU.map(m => ({ ...m, category: categories.includes(m.category) ? m.category : "" }));
   return list.slice(0, 8).map(m => {
     m = m && typeof m === "object" ? m : {};
-    const href = typeof m.href === "string" ? m.href.trim().slice(0, 300) : "";
+    let href = typeof m.href === "string" ? m.href.trim().slice(0, 300) : "";
+    if (!href && !m.category && m.label === "Instagram") href = IG_URL;          // 舊資料沒填 IG 連結時補上
     let image = typeof m.image === "string" ? m.image : "";
     if (!image && OLD_ICON_IMAGE[m.icon]) image = `/assets/menu/icon-${OLD_ICON_IMAGE[m.icon]}.svg`;
     const full = OLD_FULL_IMAGE.exec(image);

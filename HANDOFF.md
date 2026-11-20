@@ -42,7 +42,7 @@ ADMIN_PASSWORD=test-pass-123 DATA_DIR=/tmp/ws-data PORT=3100 node server.js
 - **選單**：圖示是從設計稿切出來的 SVG（`public/assets/menu/icon-*.svg`），文字用 Nunito 800。手機版固定兩欄（2 / 2 / 1）。
 - **分類**：Bulletin Board、Teacher、Classroom Activities、Weekly diary，網址 `/c/<slug>`。
   - Bulletin Board 的文章**不顯示在首頁**，只在自己的分類頁出現（後台「網站設定 → 顯示在首頁」可調）。
-  - Instagram 選單目前沒有連結。
+  - Instagram 選單連到 https://www.instagram.com/white_space_life（後台選單沒填連結時自動補上）。
 - **排序**：首頁和分類頁依文章「日期」由新到舊。
 - **文章視窗**：整頁白底（不是浮動紙張）。
   - 上方固定列：左 Logo（點了回首頁）、右兩顆圓形按鈕（下一篇、關閉），下方細線；捲動時固定。
@@ -62,5 +62,4 @@ ADMIN_PASSWORD=test-pass-123 DATA_DIR=/tmp/ws-data PORT=3100 node server.js
 
 ## 待辦／可能的下一步
 
-- Instagram 選單填上實際連結。
 - Teacher、Bulletin Board 分類目前沒有文章。
