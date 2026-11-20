@@ -189,6 +189,7 @@
       if (/^https?:/i.test(href)) { el.target = "_blank"; el.rel = "noopener"; }
     }
     linksEl.append(el);
+    if (linksEl.children.length === 2) linksEl.append(Object.assign(document.createElement("i"), { className: "modal__br" }));   // 手機版在這裡換行
   });
 
   /* 每篇文章有自己的網址：…#p=<id>。用瀏覽器的分享就會分享這一篇；
