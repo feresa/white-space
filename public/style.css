@@ -335,7 +335,7 @@ main {
 }
 @media (max-width: 640px) {
   .modal__sections:not(:empty) { margin-top: 36px; gap: 40px; }
-  .modal__sec-text { font-size: 15px; line-height: 1.95; letter-spacing: .1em; }
+  .modal__sec-text { font-size: calc((100vw - 44px) / 22.4); line-height: 1.95; letter-spacing: .1em; }
 }
 
 /* 結尾：小青蛙＋分類連結 */
@@ -395,7 +395,7 @@ main {
   .modal__hero { width: 100%; margin-top: 22px; }
   .modal__body { padding: 32px 22px 0; }
   .modal__title { margin-bottom: 24px; letter-spacing: .08em; }
-  .modal__text { font-size: 15px; line-height: 1.95; letter-spacing: .1em; }
+  .modal__text { font-size: calc((100vw - 44px) / 22.4); line-height: 1.95; letter-spacing: .1em; }   /* 一行約 20 個字（字寬 1.1em × 20 = 內文寬） */
   .modal__end { padding: 56px 22px 36px; }
   /* 手機：照設計稿（435 寬）量的比例，全部用螢幕寬度換算 —— 青蛙在左，連結分上下兩行、跟青蛙垂直置中 */
   .modal__end { padding-left: 8.1vw; padding-right: 4vw; gap: 5.38vw; align-items: flex-end; justify-content: flex-start; }
