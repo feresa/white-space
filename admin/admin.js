@@ -454,7 +454,7 @@
     { label: "Teacher", labelZh: "關於老師", image: "/assets/menu/icon-teacher.svg", href: "", category: "Teacher" },
     { label: "Classroom Activities", labelZh: "課堂活動", image: "/assets/menu/icon-activities.svg", href: "", category: "Classroom Activities" },
     { label: "Weekly diary", labelZh: "週記", image: "/assets/menu/icon-diary.svg", href: "", category: "Weekly diary" },
-    { label: "Instagram", labelZh: "IG小黑板", image: "/assets/menu/icon-instagram.svg", href: "", category: "" }
+    { label: "Instagram", labelZh: "IG小黑板", image: "/assets/menu/icon-instagram.svg", href: "https://www.instagram.com/white_space_life", category: "" }
   ];
   function menuPanel() {
     const s = doc.site;
