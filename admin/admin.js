@@ -103,7 +103,7 @@
       const bmp = await createImageBitmap(file);
       let max = 2400, q = 0.86;
       const scale0 = Math.min(1, max / Math.max(bmp.width, bmp.height));
-      if (scale0 === 1 && file.size < 1.5 * 1024 * 1024) return file;
+      if (scale0 === 1 && file.size < 400 * 1024) return file;      // 小圖不動；大圖轉成 WebP，手機載入快很多
       let best = null;
       for (let i = 0; i < 4; i++) {
         const scale = Math.min(1, max / Math.max(bmp.width, bmp.height));
@@ -131,7 +131,7 @@
       out.push(...r.files);
     }
     toast(`已上傳 ${out.length} 張`);
-    return out.map(f => ({ src: f.src, pos: "50% 50%", zoom: 1, alt: "" }));
+    return out.map(f => ({ src: f.src, pos: "50% 50%", zoom: 1, alt: "", ...(f.w ? { w: f.w, h: f.h } : {}) }));
   }
 
   /* ---------- 圖庫選圖 ---------- */
@@ -258,6 +258,14 @@
     const count = textarea.nextElementSibling;
     count.textContent = `空一行就是新的一段・目前 ${paraCount(entry.text)} 段`;
     textarea.addEventListener("input", () => { count.textContent = `空一行就是新的一段・目前 ${paraCount(entry.text)} 段`; });
+
+    /* 舊圖沒有記寬高：載入一次補上（下次儲存時一起存） */
+    [...(entry.images || []), ...(entry.sections || []).map(s => s.image)].forEach(img => {
+      if (!img || img.w) return;
+      const im = new Image();
+      im.onload = () => { if (im.naturalWidth) { img.w = im.naturalWidth; img.h = im.naturalHeight; } };
+      im.src = img.src;
+    });
 
     /* 上方大圖 */
     entry.images = entry.images || [];
