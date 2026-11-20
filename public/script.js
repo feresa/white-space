@@ -10,21 +10,22 @@
 
   const grid = document.getElementById("grid");
   const modal = document.getElementById("modal");
+  const scroller = modal.querySelector(".modal__scroll");
   const heroImg = document.getElementById("modal-hero");
-  const moreEl = document.getElementById("modal-more");
   const tagEl = document.getElementById("modal-tag");
   const titleEl = document.getElementById("modal-title");
-  const figure = document.getElementById("modal-figure");
   const textEl = document.getElementById("modal-text");
+  const secsEl = document.getElementById("modal-sections");
   const nextBtn = modal.querySelector("[data-next]");
+  const linksEl = document.getElementById("modal-links");
   const toTop = document.querySelector(".to-top");
 
-  let filter = "all";
   let visible = items;
   let current = -1;
   let opener = null;
 
   document.getElementById("footer-text").textContent = site.footer || "";
+  document.getElementById("modal-footer").textContent = site.footer || "";
 
   /* 放大時讓焦點盡量落在畫面正中央（邊緣不留白） */
   function zoomOrigin(pos, zoom) {
@@ -49,7 +50,6 @@
 
   /* ---------- 卡片 ---------- */
   function render() {
-    visible = filter === "all" ? items : items.filter(i => i.tag === filter);
     grid.innerHTML = "";
     if (!visible.length) {
       const li = document.createElement("li");
@@ -94,71 +94,103 @@
     });
   }
 
-  /* ---------- 彈出視窗 ---------- */
+  /* ---------- 文章視窗 ---------- */
   function fill(item) {
     tagEl.textContent = item.tag || "";
     tagEl.hidden = !item.tag;
     titleEl.textContent = item.title;
 
-    /* 第一張是上方滿版大圖，其餘的圖接在文字後面一張一張往下排 */
+    /* 只用第一張圖：上方大圖，完整顯示原圖比例 */
     const imgs = item.images || [];
     heroImg.removeAttribute("src");
     heroImg.parentElement.hidden = !imgs.length;
-    if (imgs.length) applyImage(heroImg, imgs[0]);
+    if (imgs.length) { heroImg.src = imgs[0].src; heroImg.alt = imgs[0].alt || ""; }
 
-    moreEl.innerHTML = "";
-    imgs.slice(1).forEach(im => {
-      const fig = document.createElement("figure");
-      const img = document.createElement("img");
-      applyImage(img, im, { lazy: true });
-      img.style.transform = "none";            // 內文裡的圖直接顯示完整比例
-      img.style.objectFit = "contain";
-      fig.append(img);
-      moreEl.append(fig);
-    });
-
-    if (item.figure) {
-      figure.hidden = false;
-      applyImage(figure.querySelector("img"), item.figure);
-    } else figure.hidden = true;
-
+    /* 內文（結尾的小青蛙和分類連結是固定的，寫在 HTML 裡） */
     textEl.innerHTML = "";
-    paragraphs(item.text).forEach(p => {
-      const el = document.createElement("p");
-      el.textContent = p;
-      textEl.append(el);
+    textEl.append(...paragraphs(item.text).map(t => { const p = document.createElement("p"); p.textContent = t; return p; }));
+
+    /* 內容區塊：有圖的區塊左右交錯（圖左文右 → 文左圖右 …），沒圖的就是整段文字 */
+    secsEl.innerHTML = "";
+    let flip = false;
+    (item.sections || []).forEach(sec => {
+      const box = document.createElement("section");
+      box.className = "modal__sec";
+      if (sec.image) {
+        box.classList.add("modal__sec--img");
+        if (flip) box.classList.add("modal__sec--flip");
+        flip = !flip;
+        const fig = document.createElement("figure");
+        const img = document.createElement("img");
+        img.src = sec.image.src; img.alt = sec.image.alt || ""; img.loading = "lazy"; img.decoding = "async";
+        fig.append(img); box.append(fig);
+      }
+      const tx = document.createElement("div");
+      tx.className = "modal__sec-text";
+      tx.append(...paragraphs(sec.text).map(t => { const p = document.createElement("p"); p.textContent = t; return p; }));
+      if (sec.text) box.append(tx);
+      secsEl.append(box);
     });
 
-    modal.querySelector(".modal__scroll").scrollTop = 0;
+    scroller.scrollTop = 0;
   }
+
+  /* 結尾的分類連結（用選單設定；文字用中文名稱） */
+  const slugOf = name => String(name).trim().toLowerCase().replace(/\s+/g, "-");
+  (site.menu || []).forEach(m => {
+    const href = m.category ? `/c/${encodeURIComponent(slugOf(m.category))}` : m.href;
+    const el = document.createElement(href ? "a" : "span");
+    el.textContent = m.labelZh || m.label;
+    if (href) {
+      el.href = href;
+      if (/^https?:/i.test(href)) { el.target = "_blank"; el.rel = "noopener"; }
+    }
+    linksEl.append(el);
+  });
+
+  /* 每篇文章有自己的網址：…#p=<id>。用瀏覽器的分享就會分享這一篇；
+     打開文章時多記一筆瀏覽紀錄，手機按瀏覽器的「返回」會關閉文章，而不是離開網站 */
+  const setHash = h => history.replaceState(history.state, "", location.pathname + location.search + h);
+  let pushed = false;
 
   function open(idx, trigger) {
     current = idx;
-    fill(visible[idx]);
+    const item = visible[idx];
+    fill(item);
     nextBtn.hidden = visible.length < 2;
+    const hash = item.id ? `#p=${encodeURIComponent(item.id)}` : "";
     if (!modal.open) {
       opener = trigger || null;
+      if (trigger && hash) { history.pushState({ wsArticle: true }, "", location.pathname + location.search + hash); pushed = true; }
+      else if (hash) setHash(hash);
       modal.showModal();
       document.body.classList.add("modal-open");
-    }
+      scroller.focus({ preventScroll: true });          // 焦點放在文章本身，按鈕不出現焦點框
+    } else if (hash) setHash(hash);
   }
 
   const close = () => modal.close();
-  function next(step = 1) {
-    if (visible.length < 2) return;
-    open((current + step + visible.length) % visible.length);
+  function step(d) {
+    if (current < 0 || visible.length < 2) return;
+    open((current + d + visible.length) % visible.length);
   }
 
   modal.addEventListener("close", () => {
     document.body.classList.remove("modal-open");
+    current = -1;
+    if (pushed) { pushed = false; history.back(); }      // 收回打開時多記的那一筆
+    else if (location.hash.startsWith("#p=")) setHash("");
     if (opener) opener.focus();
   });
+  window.addEventListener("popstate", () => {
+    if (modal.open && !location.hash.startsWith("#p=")) { pushed = false; modal.close(); }   // 手機按「返回」
+    else if (!modal.open) openFromHash();
+  });
   modal.querySelector("[data-close]").addEventListener("click", close);
-  nextBtn.addEventListener("click", () => next(1));
-  modal.addEventListener("click", e => { if (e.target === modal) close(); });
+  nextBtn.addEventListener("click", () => step(1));
   modal.addEventListener("keydown", e => {
-    if (e.key === "ArrowRight") next(1);
-    if (e.key === "ArrowLeft") next(-1);
+    if (e.key === "ArrowRight") step(1);
+    if (e.key === "ArrowLeft") step(-1);
   });
 
   // 手機：左右滑動換篇
@@ -168,7 +200,7 @@
     if (sx === null) return;
     const dx = e.changedTouches[0].clientX - sx;
     const dy = e.changedTouches[0].clientY - sy;
-    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) next(dx < 0 ? 1 : -1);
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) step(dx < 0 ? 1 : -1);
     sx = sy = null;
   });
 
@@ -182,4 +214,14 @@
   });
 
   render();
+
+  /* 打開分享連結：網址帶 #p=<id> 就直接打開那篇 */
+  function openFromHash() {
+    const m = /^#p=(.+)$/.exec(location.hash);
+    if (!m) return;
+    const id = decodeURIComponent(m[1]);
+    const idx = visible.findIndex(i => i.id === id);
+    if (idx >= 0) open(idx);
+  }
+  openFromHash();
 })();
