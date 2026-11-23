@@ -300,7 +300,7 @@ main {
 
 .modal__hero { margin: 33px auto 0; width: min(1065px, calc(100% - 48px)); }
 .modal__slides { position: relative; background: var(--placeholder); }
-.modal__slides img { display: block; width: 100%; height: auto; opacity: 0; transition: opacity .9s ease; }   /* 原圖比例，不裁切；疊在一起淡入淡出 */
+.modal__slides img { display: block; width: 100%; height: auto; opacity: 0; transition: opacity var(--fade, .9s) ease; }   /* 原圖比例，不裁切；疊在一起淡入淡出 */
 .modal__slides img + img { position: absolute; inset: 0; height: 100%; object-fit: contain; background: #fff; }   /* 框的比例照第 1 張，其他張完整放進框裡 */
 .modal__slides img.is-on { opacity: 1; }
 .modal__dots { display: flex; justify-content: center; gap: 4px; padding-top: 12px; }

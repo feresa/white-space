@@ -282,6 +282,8 @@ function cleanContent(input) {
       description: str(s.description, 300),
       footer: str(s.footer, 200),
       bannerColor: colorOf(s.bannerColor),
+      // 文章大圖輪播間隔（秒），預設 1.5
+      slideSeconds: Math.min(20, Math.max(0.5, Math.round((Number(s.slideSeconds) || 1.5) * 10) / 10)),
       menu: cleanMenu(rawMenu, categories),
       categories,
       // 不放在首頁的分類（只在自己的分類頁出現）；沒設定過時預設 Bulletin Board
