@@ -240,16 +240,7 @@
     if (e.key === "ArrowLeft") step(-1);
   });
 
-  // 手機：左右滑動換篇
-  let sx = null, sy = null;
-  modal.addEventListener("touchstart", e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
-  modal.addEventListener("touchend", e => {
-    if (sx === null) return;
-    const dx = e.changedTouches[0].clientX - sx;
-    const dy = e.changedTouches[0].clientY - sy;
-    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) step(dx < 0 ? 1 : -1);
-    sx = sy = null;
-  });
+  // 左右滑動不換篇（選取、複製文字時容易誤觸）；換篇用右上角按鈕
 
   /* ---------- 回到頂端 ---------- */
   const onScroll = () => toTop.classList.toggle("is-visible", window.scrollY > 400);
