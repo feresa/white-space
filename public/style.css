@@ -335,6 +335,7 @@ main {
 }
 @media (max-width: 640px) {
   .modal__sections:not(:empty) { margin-top: 36px; gap: 40px; }
+  .modal__sec figure { width: 100%; }                               /* 手機：區塊圖片跟文字一樣寬 */
   .modal__sec-text { font-size: calc((100vw - 44px) / 22.4); line-height: 1.95; letter-spacing: .1em; }
 }
 
