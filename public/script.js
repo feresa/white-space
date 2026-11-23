@@ -137,6 +137,8 @@
   /* ---------- 大圖輪播 ---------- */
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
   let slide = 0, timer = null;
+  const slideMs = (Number(site.slideSeconds) || 1.5) * 1000;                    // 間隔在後台「網站設定」調整
+  slidesEl.style.setProperty("--fade", `${Math.min(900, slideMs * 0.4)}ms`);   // 間隔短時淡入淡出也跟著變快
   function showSlide(n) {
     const imgs = slidesEl.children;
     if (!imgs.length) return;
@@ -147,7 +149,7 @@
   function stopAuto() { clearInterval(timer); timer = null; }
   function startAuto() {
     stopAuto();
-    if (!reduceMotion && slidesEl.children.length > 1) timer = setInterval(() => showSlide(slide + 1), 4500);
+    if (!reduceMotion && slidesEl.children.length > 1) timer = setInterval(() => showSlide(slide + 1), slideMs);
   }
   function setSlides(imgs) {
     stopAuto();
