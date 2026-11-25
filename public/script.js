@@ -6,6 +6,14 @@
     catch { data = { site: {}, items: [] }; }
   }
   const site = data.site || {};
+
+  /* 不讓文字、圖片被複製：擋右鍵選單、拖曳圖片、複製／剪下 */
+  const block = e => e.preventDefault();
+  document.addEventListener("contextmenu", block);
+  document.addEventListener("dragstart", block);
+  document.addEventListener("copy", block);
+  document.addEventListener("cut", block);
+  document.addEventListener("selectstart", block);
   const items = data.items || [];
 
   const grid = document.getElementById("grid");
