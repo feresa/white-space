@@ -28,6 +28,8 @@ html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
+  -webkit-user-select: none; user-select: none;   /* 不讓文字被選取、複製 */
+  -webkit-touch-callout: none;                    /* iPhone 長按不跳出「拷貝／儲存圖片」選單 */
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font);
@@ -38,7 +40,7 @@ body {
   overflow-x: hidden;
 }
 
-img { display: block; max-width: 100%; }
+img { display: block; max-width: 100%; -webkit-user-drag: none; }
 button { font: inherit; color: inherit; cursor: pointer; }
 
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
