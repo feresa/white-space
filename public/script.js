@@ -218,6 +218,7 @@
       if (trigger && hash) { history.pushState({ wsArticle: true }, "", location.pathname + location.search + hash); pushed = true; }
       else if (hash) setHash(hash);
       modal.showModal();
+      scroller.scrollTop = 0;                            // 視窗關著時設不了捲動位置，打開後再回到最上面
       document.body.classList.add("modal-open");
       scroller.focus({ preventScroll: true });          // 焦點放在文章本身，按鈕不出現焦點框
     } else if (hash) setHash(hash);
