@@ -399,7 +399,7 @@ main {
   .modal__body { padding: 32px 22px 0; }
   .modal__title { margin-bottom: 24px; letter-spacing: .08em; }
   .modal__text { font-size: calc((100vw - 44px) / 22.4); line-height: 1.95; letter-spacing: .1em; }   /* 一行約 20 個字（字寬 1.1em × 20 = 內文寬） */
-  .modal__end { padding: 100px 22px 36px; }   /* 內文和青蛙之間多留一點白 */
+  .modal__end { padding: 120px 22px 36px; }   /* 內文和青蛙之間多留一點白 */
   /* 手機：照設計稿（435 寬）量的比例，全部用螢幕寬度換算 —— 青蛙在左，連結分上下兩行、跟青蛙垂直置中 */
   .modal__end { padding-left: 8.1vw; padding-right: 4vw; gap: 5.38vw; align-items: flex-end; justify-content: flex-start; }
   .modal__frog { width: 14.8vw; margin: 0; }
