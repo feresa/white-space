@@ -280,7 +280,8 @@ function cleanContent(input) {
       name: str(s.name, 60) || "留白教室 White Space",
       tagline: str(s.tagline, 120),
       description: str(s.description, 300),
-      footer: str(s.footer, 200),
+      // 舊的預設頁尾自動換成完整版權宣告（後台「網站設定 → 頁尾文字」可改）
+      footer: (f => !f || f === "© 留白教室 White Space" ? "版權所有 © 2026 留白教室White Space | All Rights Reserved." : f)(str(s.footer, 200)),
       bannerColor: colorOf(s.bannerColor),
       // 文章大圖輪播間隔（秒），預設 1.5
       slideSeconds: Math.min(20, Math.max(0.5, Math.round((Number(s.slideSeconds) || 1.5) * 10) / 10)),
